@@ -11,16 +11,10 @@ class MateriasWidget(QWidget):
         self.id_actual = None
         self.materia_seleccionada = None
 
-        # =========================
-        # CONTENEDOR GENERAL
-        # =========================
         layout = QVBoxLayout()
         layout.setContentsMargins(25, 25, 25, 25)
         layout.setSpacing(18)
 
-        # =========================
-        # HEADER PRO
-        # =========================
         header = QFrame()
         header.setStyleSheet("""
             QFrame {
@@ -34,17 +28,10 @@ class MateriasWidget(QWidget):
         h = QVBoxLayout()
 
         titulo = QLabel("📚 Gestión de Materias Pro")
-        titulo.setStyleSheet("""
-            font-size:32px;
-            font-weight:bold;
-            color:white;
-        """)
+        titulo.setStyleSheet("font-size:32px;font-weight:bold;color:white;")
 
         subtitulo = QLabel("Administra materias y alumnos inscritos")
-        subtitulo.setStyleSheet("""
-            color:#94A3B8;
-            font-size:14px;
-        """)
+        subtitulo.setStyleSheet("color:#94A3B8;font-size:14px;")
 
         h.addWidget(titulo)
         h.addWidget(subtitulo)
@@ -52,28 +39,7 @@ class MateriasWidget(QWidget):
         header.setLayout(h)
         layout.addWidget(header)
 
-        # =========================
-        # TABS
-        # =========================
         self.tabs = QTabWidget()
-        self.tabs.setStyleSheet("""
-            QTabWidget::pane{
-                border:none;
-            }
-
-            QTabBar::tab{
-                background:#111827;
-                color:#94A3B8;
-                padding:12px;
-                border-radius:10px;
-                margin-right:6px;
-            }
-
-            QTabBar::tab:selected{
-                background:#2563EB;
-                color:white;
-            }
-        """)
 
         self.tabRegistro = QWidget()
         self.tabAsignar = QWidget()
@@ -88,7 +54,6 @@ class MateriasWidget(QWidget):
         layout.addWidget(self.tabs)
         self.setLayout(layout)
 
-        # UI
         self.ui_registro()
         self.ui_asignar()
         self.ui_materias()
@@ -98,7 +63,7 @@ class MateriasWidget(QWidget):
         self.cargar_combos()
 
     # =========================
-    # ESTILO TABLAS PRO
+    # TABLA ESTILO PRO
     # =========================
     def estilo_tabla(self, table):
         table.setStyleSheet("""
@@ -133,8 +98,6 @@ class MateriasWidget(QWidget):
         table.verticalHeader().setVisible(False)
         table.setSelectionBehavior(QTableWidget.SelectRows)
         table.setEditTriggers(QTableWidget.NoEditTriggers)
-
-        # 🔥 filas más grandes (BOTONES YA NO SE APACHURRAN)
         table.verticalHeader().setDefaultSectionSize(48)
         table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
@@ -142,56 +105,16 @@ class MateriasWidget(QWidget):
     # REGISTRO
     # =========================
     def ui_registro(self):
-
         layout = QVBoxLayout()
-
-        card = QFrame()
-        card.setStyleSheet("""
-            QFrame {
-                background:#0B1220;
-                border-radius:16px;
-                padding:20px;
-            }
-        """)
-
-        v = QVBoxLayout()
 
         self.nombre = QLineEdit()
         self.nombre.setPlaceholderText("Nombre de la materia")
 
-        self.nombre.setStyleSheet("""
-            QLineEdit {
-                background:#111827;
-                color:white;
-                padding:12px;
-                border-radius:10px;
-                border:1px solid #1F2937;
-            }
-        """)
-
         self.btnGuardar = QPushButton("💾 Guardar Materia")
-        self.btnGuardar.setStyleSheet("""
-            QPushButton {
-                background:#16A34A;
-                color:white;
-                padding:12px;
-                border-radius:10px;
-                font-weight:bold;
-            }
-
-            QPushButton:hover {
-                background:#15803D;
-            }
-        """)
-
         self.btnGuardar.clicked.connect(self.guardar)
 
-        v.addWidget(self.nombre)
-        v.addWidget(self.btnGuardar)
-
-        card.setLayout(v)
-
-        layout.addWidget(card)
+        layout.addWidget(self.nombre)
+        layout.addWidget(self.btnGuardar)
         layout.addStretch()
 
         self.tabRegistro.setLayout(layout)
@@ -200,36 +123,12 @@ class MateriasWidget(QWidget):
     # ASIGNAR
     # =========================
     def ui_asignar(self):
-
         layout = QVBoxLayout()
 
         self.comboAlumno = QComboBox()
         self.comboMateria = QComboBox()
 
-        for w in [self.comboAlumno, self.comboMateria]:
-            w.setStyleSheet("""
-                QComboBox {
-                    background:#111827;
-                    color:white;
-                    padding:10px;
-                    border-radius:10px;
-                }
-            """)
-
-        self.btnAsignar = QPushButton("🎯 Asignar Materia")
-        self.btnAsignar.setStyleSheet("""
-            QPushButton {
-                background:#2563EB;
-                color:white;
-                padding:12px;
-                border-radius:10px;
-                font-weight:bold;
-            }
-            QPushButton:hover {
-                background:#1D4ED8;
-            }
-        """)
-
+        self.btnAsignar = QPushButton("🎯 Asignar")
         self.btnAsignar.clicked.connect(self.asignar)
 
         layout.addWidget(QLabel("Alumno"))
@@ -237,20 +136,21 @@ class MateriasWidget(QWidget):
         layout.addWidget(QLabel("Materia"))
         layout.addWidget(self.comboMateria)
         layout.addWidget(self.btnAsignar)
-
         layout.addStretch()
+
         self.tabAsignar.setLayout(layout)
 
     # =========================
-    # CRUD MATERIAS
+    # MATERIAS CRUD
     # =========================
     def ui_materias(self):
-
         layout = QVBoxLayout()
 
         self.tablaMaterias = QTableWidget()
         self.tablaMaterias.setColumnCount(3)
         self.tablaMaterias.setHorizontalHeaderLabels(["ID", "Materia", "Acciones"])
+
+        self.tablaMaterias.cellClicked.connect(self.ver_alumnos)  # 🔥 FIX IMPORTANTE
 
         self.estilo_tabla(self.tablaMaterias)
 
@@ -258,18 +158,13 @@ class MateriasWidget(QWidget):
         self.tabMaterias.setLayout(layout)
 
     # =========================
-    # DETALLE MATERIA
+    # DETALLE
     # =========================
     def ui_detalle(self):
-
         layout = QVBoxLayout()
 
         self.lblMateria = QLabel("Selecciona una materia")
-        self.lblMateria.setStyleSheet("""
-            color:white;
-            font-size:16px;
-            font-weight:bold;
-        """)
+        self.lblMateria.setStyleSheet("color:white;font-size:16px;font-weight:bold;")
 
         self.tablaAlumnos = QTableWidget()
         self.tablaAlumnos.setColumnCount(2)
@@ -286,7 +181,6 @@ class MateriasWidget(QWidget):
     # GUARDAR
     # =========================
     def guardar(self):
-
         conn = conectar()
         cursor = conn.cursor()
 
@@ -307,10 +201,9 @@ class MateriasWidget(QWidget):
         self.cargar_combos()
 
     # =========================
-    # MATERIAS CRUD
+    # MATERIAS
     # =========================
     def cargar_materias(self):
-
         conn = conectar()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM materias")
@@ -327,13 +220,9 @@ class MateriasWidget(QWidget):
             cont = QWidget()
             h = QHBoxLayout()
             h.setContentsMargins(0, 0, 0, 0)
-            h.setSpacing(6)
 
             btnE = QPushButton("✏️")
             btnD = QPushButton("🗑")
-
-            btnE.setStyleSheet("background:#2563EB;")
-            btnD.setStyleSheet("background:#DC2626;")
 
             btnE.clicked.connect(lambda _, x=m: self.editar(x))
             btnD.clicked.connect(lambda _, id=m[0]: self.eliminar(id))
@@ -345,47 +234,7 @@ class MateriasWidget(QWidget):
             self.tablaMaterias.setCellWidget(i, 2, cont)
 
     # =========================
-    # EDITAR
-    # =========================
-    def editar(self, m):
-        self.id_actual = m[0]
-        self.nombre.setText(m[1])
-        self.tabs.setCurrentIndex(0)
-
-    # =========================
-    # ELIMINAR
-    # =========================
-    def eliminar(self, id):
-
-        conn = conectar()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM materias WHERE id=?", (id,))
-        conn.commit()
-        conn.close()
-
-        self.cargar_materias()
-
-    # =========================
-    # ASIGNAR
-    # =========================
-    def asignar(self):
-
-        alumno_id = self.comboAlumno.currentData()
-        materia_id = self.comboMateria.currentData()
-
-        conn = conectar()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT OR IGNORE INTO alumno_materia(alumno_id, materia_id)
-            VALUES (?, ?)
-        """, (alumno_id, materia_id))
-
-        conn.commit()
-        conn.close()
-
-    # =========================
-    # DETALLE
+    # CLICK MATERIA → ALUMNOS (FIX REAL)
     # =========================
     def ver_alumnos(self, row, col):
 
@@ -410,12 +259,9 @@ class MateriasWidget(QWidget):
         self.tablaAlumnos.setRowCount(len(datos))
 
         for i, r in enumerate(datos):
-
             self.tablaAlumnos.setItem(i, 0, QTableWidgetItem(r[0]))
 
             btn = QPushButton("🗑")
-            btn.setStyleSheet("background:#DC2626;")
-
             btn.clicked.connect(lambda _, x=r[1]: self.eliminar_inscripcion(x))
 
             self.tablaAlumnos.setCellWidget(i, 1, btn)
@@ -439,10 +285,46 @@ class MateriasWidget(QWidget):
             self.ver_alumnos(self.materia_seleccionada, self.lblMateria.text())
 
     # =========================
+    # ELIMINAR MATERIA
+    # =========================
+    def eliminar(self, id):
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM materias WHERE id=?", (id,))
+        conn.commit()
+        conn.close()
+        self.cargar_materias()
+
+    # =========================
+    # EDITAR
+    # =========================
+    def editar(self, m):
+        self.id_actual = m[0]
+        self.nombre.setText(m[1])
+        self.tabs.setCurrentIndex(0)
+
+    # =========================
+    # ASIGNAR
+    # =========================
+    def asignar(self):
+        alumno_id = self.comboAlumno.currentData()
+        materia_id = self.comboMateria.currentData()
+
+        conn = conectar()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT OR IGNORE INTO alumno_materia(alumno_id, materia_id)
+            VALUES (?, ?)
+        """, (alumno_id, materia_id))
+
+        conn.commit()
+        conn.close()
+
+    # =========================
     # COMBOS
     # =========================
     def cargar_combos(self):
-
         conn = conectar()
         cursor = conn.cursor()
 
