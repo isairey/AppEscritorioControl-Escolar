@@ -10,179 +10,195 @@ class Dashboard(QWidget):
 
         self.setObjectName("dashboard")
 
-        mainLayout = QVBoxLayout()
-        mainLayout.setContentsMargins(25, 25, 25, 25)
-        mainLayout.setSpacing(20)
-
-        # HEADER
-
-        header = QFrame()
-        header.setStyleSheet("""
-            QFrame{
-                background:qlineargradient(
-                    x1:0,y1:0,x2:1,y2:0,
-                    stop:0 #2563eb,
-                    stop:1 #7c3aed
-                );
-                border-radius:20px;
+        # ESTILO GLOBAL
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #0B0F1A;
+                color: #E2E8F0;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            QLabel {
+                color: #CBD5E1;
+            }
+            QListWidget {
+                background-color: #1E293B;
+                border-radius: 12px;
+                padding: 10px;
+            }
+            QListWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #334155;
             }
         """)
 
-        headerLayout = QVBoxLayout()
+        mainLayout = QVBoxLayout()
+        mainLayout.setContentsMargins(30, 30, 30, 30)
+        mainLayout.setSpacing(24)
 
-        titulo = QLabel("🎓 TeacherDesk Pro")
-        titulo.setStyleSheet("""
-            font-size:30px;
-            font-weight:bold;
-            color:white;
+        # ==========================
+        # HEADER SIN BORDES
+        # ==========================
+        header = QFrame()
+        header.setFixedHeight(120)
+
+        header.setStyleSheet("""
+            QFrame {
+                background-color: #1E293B;
+                border-radius: 20px;
+            }
         """)
 
-        fecha = QLabel(
-            QDate.currentDate().toString(
-                "dddd dd MMMM yyyy"
-            )
-        )
+        headerLayout = QHBoxLayout()
+        headerLayout.setContentsMargins(30, 20, 30, 20)
 
-        fecha.setStyleSheet("""
-            color:white;
-            font-size:14px;
-        """)
+        icon_label = QLabel("🎓")
+        icon_label.setStyleSheet("font-size: 48px;")
 
-        headerLayout.addWidget(titulo)
-        headerLayout.addWidget(fecha)
+        text_col = QVBoxLayout()
+        text_col.setSpacing(2)
+
+        titulo = QLabel("TeacherDesk")
+        titulo.setStyleSheet("font-size: 28px; font-weight: 700; color: #F8FAFC;")
+
+        fecha = QLabel(QDate.currentDate().toString("dddd, dd 'de' MMMM 'de' yyyy"))
+        fecha.setStyleSheet("font-size: 13px; color: #64748B;")
+
+        text_col.addWidget(titulo)
+        text_col.addWidget(fecha)
+
+        headerLayout.addWidget(icon_label)
+        headerLayout.addLayout(text_col)
+        headerLayout.addStretch()
 
         header.setLayout(headerLayout)
 
         mainLayout.addWidget(header)
 
+        # ==========================
         # TARJETAS
-
+        # ==========================
         cards = QHBoxLayout()
+        cards.setSpacing(20)
 
-        self.cardAlumnos = self.crear_card(
-            "👨‍🎓",
-            "ALUMNOS",
-            "#2563eb"
-        )
+        self.cardAlumnos = self.crear_card("👨‍🎓", "Total Alumnos", "#3B82F6")
+        self.cardMaterias = self.crear_card("📚", "Total Materias", "#8B5CF6")
+        self.cardPromedio = self.crear_card("📊", "Promedio General", "#10B981")
 
-        self.cardMaterias = self.crear_card(
-            "📚",
-            "MATERIAS",
-            "#9333ea"
-        )
-
-        self.cardPromedio = self.crear_card(
-            "📈",
-            "PROMEDIO",
-            "#16a34a"
-        )
-
-        cards.addWidget(
-            self.cardAlumnos["frame"]
-        )
-
-        cards.addWidget(
-            self.cardMaterias["frame"]
-        )
-
-        cards.addWidget(
-            self.cardPromedio["frame"]
-        )
+        cards.addWidget(self.cardAlumnos["frame"])
+        cards.addWidget(self.cardMaterias["frame"])
+        cards.addWidget(self.cardPromedio["frame"])
 
         mainLayout.addLayout(cards)
 
+        # ==========================
         # PANEL INFERIOR
-
+        # ==========================
         bottom = QHBoxLayout()
+        bottom.setSpacing(20)
 
         # ACTIVIDAD
-
         actividadFrame = QFrame()
-
         actividadFrame.setStyleSheet("""
-            QFrame{
-                background:#1a1a1a;
-                border-radius:15px;
+            QFrame {
+                background-color: #1E293B;
+                border-radius: 20px;
             }
         """)
 
         actividadLayout = QVBoxLayout()
+        actividadLayout.setContentsMargins(24, 24, 24, 24)
+        actividadLayout.setSpacing(16)
 
-        actividadTitulo = QLabel(
-            "⚡ Actividad del Sistema"
-        )
+        actividadTitulo = QHBoxLayout()
+        
+        actividadIcon = QLabel("⚡")
+        actividadIcon.setStyleSheet("font-size: 24px;")
 
-        actividadTitulo.setStyleSheet("""
-            font-size:18px;
-            font-weight:bold;
-        """)
+        actividadLabel = QLabel("Actividad Reciente")
+        actividadLabel.setStyleSheet("font-size: 18px; font-weight: 700; color: #F8FAFC;")
+
+        actividadTitulo.addWidget(actividadIcon)
+        actividadTitulo.addWidget(actividadLabel)
+        actividadTitulo.addStretch()
 
         self.actividad = QListWidget()
+        self.actividad.setStyleSheet("""
+            QListWidget {
+                background-color: #0F172A;
+                border-radius: 12px;
+                padding: 8px;
+            }
+            QListWidget::item {
+                padding: 12px;
+                border-bottom: 1px solid #1E293B;
+            }
+        """)
 
-        actividadLayout.addWidget(
-            actividadTitulo
-        )
+        actividadLayout.addLayout(actividadTitulo)
+        actividadLayout.addWidget(self.actividad)
 
-        actividadLayout.addWidget(
-            self.actividad
-        )
-
-        actividadFrame.setLayout(
-            actividadLayout
-        )
+        actividadFrame.setLayout(actividadLayout)
 
         # RESUMEN
-
         resumenFrame = QFrame()
-
         resumenFrame.setStyleSheet("""
-            QFrame{
-                background:#1a1a1a;
-                border-radius:15px;
+            QFrame {
+                background-color: #1E293B;
+                border-radius: 20px;
             }
         """)
 
         resumenLayout = QVBoxLayout()
+        resumenLayout.setContentsMargins(24, 24, 24, 24)
+        resumenLayout.setSpacing(16)
 
-        resumenTitulo = QLabel(
-            "📊 Resumen Escolar"
-        )
+        resumenTitulo = QHBoxLayout()
+        
+        resumenIcon = QLabel("📈")
+        resumenIcon.setStyleSheet("font-size: 24px;")
 
-        resumenTitulo.setStyleSheet("""
-            font-size:18px;
-            font-weight:bold;
-        """)
+        resumenLabel = QLabel("Resumen Escolar")
+        resumenLabel.setStyleSheet("font-size: 18px; font-weight: 700; color: #F8FAFC;")
+
+        resumenTitulo.addWidget(resumenIcon)
+        resumenTitulo.addWidget(resumenLabel)
+        resumenTitulo.addStretch()
 
         self.lblResumen = QLabel()
-
         self.lblResumen.setWordWrap(True)
+        self.lblResumen.setStyleSheet("font-size: 14px; color: #94A3B8; line-height: 24px;")
 
-        self.lblResumen.setStyleSheet("""
-            font-size:15px;
-            color:#cccccc;
+        # Estado
+        EstadoFrame = QFrame()
+        EstadoFrame.setStyleSheet("""
+            QFrame {
+                background-color: #10B981;
+                border-radius: 10px;
+                padding: 12px;
+                margin-top: 10px;
+            }
         """)
 
-        resumenLayout.addWidget(
-            resumenTitulo
-        )
+        EstadoLayout = QHBoxLayout()
+        
+        estadoIcon = QLabel("🟢")
+        estadoLabel = QLabel("Sistema Operativo")
+        estadoLabel.setStyleSheet("font-weight: 700; color: white;")
 
-        resumenLayout.addWidget(
-            self.lblResumen
-        )
+        EstadoLayout.addWidget(estadoIcon)
+        EstadoLayout.addWidget(estadoLabel)
+        EstadoLayout.addStretch()
 
-        resumenFrame.setLayout(
-            resumenLayout
-        )
+        EstadoFrame.setLayout(EstadoLayout)
 
-        bottom.addWidget(
-            actividadFrame,
-            2
-        )
+        resumenLayout.addLayout(resumenTitulo)
+        resumenLayout.addWidget(self.lblResumen)
+        resumenLayout.addWidget(EstadoFrame)
 
-        bottom.addWidget(
-            resumenFrame,
-            1
-        )
+        resumenFrame.setLayout(resumenLayout)
+
+        bottom.addWidget(actividadFrame, 2)
+        bottom.addWidget(resumenFrame, 1)
 
         mainLayout.addLayout(bottom)
 
@@ -190,133 +206,94 @@ class Dashboard(QWidget):
 
         self.actualizar()
 
-    def crear_card(
-        self,
-        icono,
-        titulo,
-        color
-    ):
+    # ==========================
+    # CREAR TARJETAS
+    # ==========================
+    def crear_card(self, icono, titulo, color):
 
         frame = QFrame()
-
-        frame.setStyleSheet(f"""
-            QFrame{{
-                background:{color};
-                border-radius:20px;
-            }}
+        frame.setStyleSheet("""
+            QFrame {
+                background-color: #1E293B;
+                border-radius: 20px;
+            }
         """)
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(12)
 
-        icon = QLabel(icono)
-
-        icon.setAlignment(
-            Qt.AlignCenter
-        )
-
-        icon.setStyleSheet("""
-            font-size:42px;
+        header = QFrame()
+        header.setFixedHeight(60)
+        header.setStyleSheet(f"""
+            QFrame {{
+                background-color: {color};
+                border-radius: 12px;
+            }}
         """)
+
+        headerLayout = QVBoxLayout()
+        
+        icon = QLabel(icono)
+        icon.setAlignment(Qt.AlignCenter)
+        icon.setStyleSheet("font-size: 28px;")
+        
+        headerLayout.addWidget(icon)
+        header.setLayout(headerLayout)
 
         title = QLabel(titulo)
-
-        title.setAlignment(
-            Qt.AlignCenter
-        )
-
-        title.setStyleSheet("""
-            font-size:16px;
-            font-weight:bold;
-            color:white;
-        """)
+        title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("font-size: 14px; font-weight: 600; color: #94A3B8;")
 
         value = QLabel("0")
+        value.setAlignment(Qt.AlignCenter)
+        value.setStyleSheet("font-size: 36px; font-weight: 700; color: #F8FAFC;")
 
-        value.setAlignment(
-            Qt.AlignCenter
-        )
-
-        value.setStyleSheet("""
-            font-size:34px;
-            font-weight:bold;
-            color:white;
-        """)
-
-        layout.addWidget(icon)
+        layout.addWidget(header)
         layout.addWidget(title)
         layout.addWidget(value)
+        layout.addStretch()
 
         frame.setLayout(layout)
 
-        return {
-            "frame": frame,
-            "valor": value
-        }
+        return {"frame": frame, "valor": value}
 
+    # ==========================
+    # ACTUALIZAR
+    # ==========================
     def actualizar(self):
 
         conn = conectar()
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT COUNT(*) FROM alumnos"
-        )
+        cursor.execute("SELECT COUNT(*) FROM alumnos")
         alumnos = cursor.fetchone()[0]
 
-        cursor.execute(
-            "SELECT COUNT(*) FROM materias"
-        )
+        cursor.execute("SELECT COUNT(*) FROM materias")
         materias = cursor.fetchone()[0]
 
-        cursor.execute("""
-            SELECT AVG(calificacion)
-            FROM calificaciones
-        """)
+        cursor.execute("SELECT AVG(calificacion) FROM calificaciones")
         promedio = cursor.fetchone()[0]
 
         conn.close()
 
-        promedio = round(
-            promedio or 0,
-            2
-        )
+        promedio = round(promedio or 0, 2)
 
-        self.cardAlumnos["valor"].setText(
-            str(alumnos)
-        )
-
-        self.cardMaterias["valor"].setText(
-            str(materias)
-        )
-
-        self.cardPromedio["valor"].setText(
-            str(promedio)
-        )
+        self.cardAlumnos["valor"].setText(str(alumnos))
+        self.cardMaterias["valor"].setText(str(materias))
+        self.cardPromedio["valor"].setText(str(promedio))
 
         self.actividad.clear()
-
-        self.actividad.addItem(
-            f"👨‍🎓 Alumnos registrados: {alumnos}"
-        )
-
-        self.actividad.addItem(
-            f"📚 Materias registradas: {materias}"
-        )
-
-        self.actividad.addItem(
-            f"📈 Promedio general: {promedio}"
-        )
+        self.actividad.addItem(f"  👨‍🎓 Alumnos: {alumnos}")
+        self.actividad.addItem(f"  📚 Materias: {materias}")
+        self.actividad.addItem(f"  📊 Promedio: {promedio}")
 
         self.lblResumen.setText(
             f"""
-Sistema escolar activo.
+- <b>{alumnos}</b> Alumnos
+- <b>{materias}</b> Materias  
+- <b>{promedio}</b> Promedio
 
-• Total de alumnos: {alumnos}
-
-• Total de materias: {materias}
-
-• Promedio general: {promedio}
-
-Estado del sistema: Operativo ✅
-"""
+<b>Actualizado:</b> {QDate.currentDate().toString("dd/MM/yyyy")}
+            """
         )
