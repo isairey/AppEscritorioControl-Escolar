@@ -34,35 +34,51 @@ class MainWindow(QMainWindow):
         # ==========================
 
         sidebar = QFrame()
-        sidebar.setFixedWidth(240)
+        sidebar.setFixedWidth(260)
 
         sidebar.setStyleSheet("""
-            QFrame{
-                background:#0F172A;
-                border-right:1px solid #1E293B;
+            QFrame {
+                background-color: #0B0F1A;
             }
         """)
 
         sideLayout = QVBoxLayout()
+        sideLayout.setContentsMargins(20, 30, 20, 20)
+        sideLayout.setSpacing(8)
 
-        logo = QLabel("🎓 TeacherDesk")
+        # Logo
+        logo = QLabel("🎓")
         logo.setAlignment(Qt.AlignCenter)
+        logo.setStyleSheet("font-size: 40px;")
 
-        logo.setStyleSheet("""
-            font-size:24px;
-            font-weight:bold;
-            color:white;
-            padding:20px;
+        logoTitulo = QLabel("TeacherDesk")
+        logoTitulo.setAlignment(Qt.AlignCenter)
+        logoTitulo.setStyleSheet("""
+            font-size: 20px;
+            font-weight: 700;
+            color: #F8FAFC;
+            padding: 5px;
+        """)
+
+        logoSub = QLabel("Sistema Escolar")
+        logoSub.setAlignment(Qt.AlignCenter)
+        logoSub.setStyleSheet("""
+            font-size: 12px;
+            color: #64748B;
+            padding-bottom: 20px;
         """)
 
         sideLayout.addWidget(logo)
+        sideLayout.addWidget(logoTitulo)
+        sideLayout.addWidget(logoSub)
 
-        self.btnDashboard = QPushButton("🏠 Dashboard")
-        self.btnAlumnos = QPushButton("👨‍🎓 Alumnos")
-        self.btnMaterias = QPushButton("📚 Materias")
-        self.btnCalificaciones = QPushButton("📝 Calificaciones")
-        self.btnAsistencia = QPushButton("📅 Asistencia")
-        self.btnReportes = QPushButton("📊 Reportes")
+        # Botones
+        self.btnDashboard = QPushButton(" 🏠  Dashboard")
+        self.btnAlumnos = QPushButton(" 👨‍🎓  Alumnos")
+        self.btnMaterias = QPushButton(" 📚  Materias")
+        self.btnCalificaciones = QPushButton(" 📝  Calificaciones")
+        self.btnAsistencia = QPushButton(" 📅  Asistencia")
+        self.btnReportes = QPushButton(" 📊  Reportes")
 
         botones = [
             self.btnDashboard,
@@ -74,22 +90,21 @@ class MainWindow(QMainWindow):
         ]
 
         for btn in botones:
-
-            btn.setMinimumHeight(50)
-
+            btn.setMinimumHeight(48)
             btn.setStyleSheet("""
-                QPushButton{
-                    text-align:left;
-                    padding-left:20px;
-                    border:none;
-                    background:transparent;
-                    color:white;
-                    font-size:15px;
+                QPushButton {
+                    text-align: left;
+                    padding-left: 20px;
+                    background-color: transparent;
+                    color: #94A3B8;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    font-weight: 500;
                 }
-
-                QPushButton:hover{
-                    background:#1E293B;
-                    border-radius:10px;
+                QPushButton:hover {
+                    background-color: #1E293B;
+                    color: #F8FAFC;
                 }
             """)
 
@@ -97,11 +112,13 @@ class MainWindow(QMainWindow):
 
         sideLayout.addStretch()
 
+        # Version
         footer = QLabel("v1.0.0")
         footer.setAlignment(Qt.AlignCenter)
         footer.setStyleSheet("""
-            color:#94A3B8;
-            padding:15px;
+            color: #475569;
+            font-size: 12px;
+            padding: 10px;
         """)
 
         sideLayout.addWidget(footer)
@@ -136,43 +153,21 @@ class MainWindow(QMainWindow):
         # ==========================
         # EVENTOS
         # ==========================
-
-        self.btnDashboard.clicked.connect(
-            lambda: self.mostrar_pagina(0)
-        )
-
-        self.btnAlumnos.clicked.connect(
-            lambda: self.mostrar_pagina(1)
-        )
-
-        self.btnMaterias.clicked.connect(
-            lambda: self.mostrar_pagina(2)
-        )
-
-        self.btnCalificaciones.clicked.connect(
-            lambda: self.mostrar_pagina(3)
-        )
-
-        self.btnAsistencia.clicked.connect(
-            lambda: self.mostrar_pagina(4)
-        )
-
-        self.btnReportes.clicked.connect(
-            lambda: self.mostrar_pagina(5)
-        )
+        self.btnDashboard.clicked.connect(lambda: self.mostrar_pagina(0))
+        self.btnAlumnos.clicked.connect(lambda: self.mostrar_pagina(1))
+        self.btnMaterias.clicked.connect(lambda: self.mostrar_pagina(2))
+        self.btnCalificaciones.clicked.connect(lambda: self.mostrar_pagina(3))
+        self.btnAsistencia.clicked.connect(lambda: self.mostrar_pagina(4))
+        self.btnReportes.clicked.connect(lambda: self.mostrar_pagina(5))
 
     def mostrar_pagina(self, index):
-
         self.stack.setCurrentIndex(index)
-
         if index == 0:
             self.dashboard.actualizar()
 
 
 def abrir_sistema():
-
     global ventana
-
     ventana = MainWindow()
     ventana.show()
 
@@ -184,82 +179,115 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     app.setStyleSheet("""
+        QWidget {
+            background-color: #0B0F1A;
+            color: #E2E8F0;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+        }
 
-    QWidget{
-        background:#020617;
-        color:white;
-        font-family:'Segoe UI';
-        font-size:14px;
-    }
+        QLabel {
+            color: #CBD5E1;
+        }
 
-    QLineEdit,
-    QComboBox,
-    QDateEdit,
-    QSpinBox,
-    QDoubleSpinBox{
-        background:#111827;
-        border:1px solid #334155;
-        border-radius:10px;
-        padding:8px;
-        color:white;
-    }
+        QLineEdit,
+        QComboBox,
+        QDateEdit,
+        QSpinBox,
+        QDoubleSpinBox {
+            background-color: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+        }
 
-    QPushButton{
-        background:#2563EB;
-        color:white;
-        border:none;
-        border-radius:10px;
-        padding:10px;
-        font-weight:bold;
-    }
+        QLineEdit:focus,
+        QComboBox:focus {
+            border-color: #3B82F6;
+        }
 
-    QPushButton:hover{
-        background:#1D4ED8;
-    }
+        QLineEdit::placeholder {
+            color: #64748B;
+        }
 
-    QTableWidget{
-        background:#111827;
-        border:none;
-        border-radius:10px;
-        gridline-color:#1E293B;
-    }
+        QPushButton {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
 
-    QHeaderView::section{
-        background:#1E293B;
-        padding:8px;
-        border:none;
-        font-weight:bold;
-        color:white;
-    }
+        QPushButton:hover {
+            background-color: #2563EB;
+        }
 
-    QListWidget{
-        background:#111827;
-        border:none;
-        border-radius:10px;
-        padding:10px;
-    }
+        QPushButton:pressed {
+            background-color: #1D4ED8;
+        }
 
-    QScrollBar:vertical{
-        background:#0F172A;
-        width:10px;
-        border:none;
-    }
+        QTableWidget {
+            background-color: #0F172A;
+            border: none;
+            border-radius: 12px;
+            gridline-color: #1E293B;
+        }
 
-    QScrollBar::handle:vertical{
-        background:#334155;
-        border-radius:5px;
-    }
+        QTableWidget::item {
+            padding: 12px;
+            border-bottom: 1px solid #1E293B;
+        }
 
-    QScrollBar::handle:vertical:hover{
-        background:#475569;
-    }
+        QTableWidget::item:selected {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
 
+        QHeaderView::section {
+            background-color: #1E293B;
+            padding: 14px;
+            border: none;
+            font-weight: 600;
+            color: #94A3B8;
+        }
+
+        QListWidget {
+            background-color: #1E293B;
+            border: none;
+            border-radius: 12px;
+        }
+
+        QListWidget::item {
+            padding: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        QScrollBar:vertical {
+            background: transparent;
+            width: 8px;
+        }
+
+        QScrollBar::handle:vertical {
+            background-color: #475569;
+            border-radius: 4px;
+        }
+
+        QScrollBar::handle:vertical:hover {
+            background-color: #64748B;
+        }
+
+        QMessageBox {
+            background-color: #1E293B;
+        }
+
+        QMessageBox QPushButton {
+            background-color: #3B82F6;
+            padding: 8px 20px;
+        }
     """)
 
-    login = LoginWindow(
-        abrir_sistema
-    )
-
+    login = LoginWindow(abrir_sistema)
     login.show()
 
     sys.exit(app.exec())
