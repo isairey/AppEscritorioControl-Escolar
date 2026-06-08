@@ -11,44 +11,120 @@ class MateriasWidget(QWidget):
         self.id_actual = None
         self.materia_seleccionada = None
 
-        layout = QVBoxLayout()
-        layout.setContentsMargins(25, 25, 25, 25)
-        layout.setSpacing(18)
-
-        header = QFrame()
-        header.setStyleSheet("""
-            QFrame {
-                background: qlineargradient(x1:0,y1:0,x2:1,y2:0,
-                stop:0 #1E293B, stop:1 #0F172A);
-                border-radius: 18px;
-                padding: 18px;
+        # Estilo global
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #0B0F1A;
+                color: #E2E8F0;
+                font-family: 'Segoe UI', 'Inter', sans-serif;
+            }
+            QLabel {
+                color: #CBD5E1;
+                background: transparent;
+            }
+            QLineEdit, QComboBox {
+                background-color: #1E293B;
+                border: 2px solid #334155;
+                border-radius: 10px;
+                padding: 12px 16px;
+                color: white;
+            }
+            QLineEdit:focus, QComboBox:focus {
+                border-color: #3B82F6;
+            }
+            QLineEdit::placeholder { color: #64748B; }
+            QPushButton {
+                border: none;
+                border-radius: 10px;
+                padding: 12px 24px;
+                font-weight: 600;
+                font-size: 14px;
+            }
+            QTabBar::tab {
+                background: transparent;
+                color: #64748B;
+                padding: 12px 20px;
+                border: none;
+                font-weight: 500;
+            }
+            QTabBar::tab:selected {
+                color: #3B82F6;
+                background: rgba(59, 130, 246, 0.1);
+                border-radius: 8px;
+            }
+            QTabBar::tab:hover:!selected {
+                color: #94A3B8;
+                background: rgba(148, 163, 184, 0.1);
             }
         """)
 
-        h = QVBoxLayout()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(24)
 
-        titulo = QLabel("📚 Gestión de Materias Pro")
-        titulo.setStyleSheet("font-size:32px;font-weight:bold;color:white;")
+        # HEADER COLOR SOLIDO
+        header = QFrame()
+        header.setObjectName("header")
+        header.setFixedHeight(120)
+        header.setStyleSheet("""
+            QFrame#header {
+                background-color: #1E293B;
+                border-radius: 20px;
+                border-radius:15px;
+                padding:18px;
+            }
+        """)
 
-        subtitulo = QLabel("Administra materias y alumnos inscritos")
-        subtitulo.setStyleSheet("color:#94A3B8;font-size:14px;")
+        h = QHBoxLayout()
+        h.setContentsMargins(30, 0, 30, 0)
+        h.setSpacing(20)
 
-        h.addWidget(titulo)
-        h.addWidget(subtitulo)
+        # Icono grande
+        icon_label = QLabel("📚")
+        icon_label.setStyleSheet("font-size: 48px; background: transparent;")
+
+        # Textos
+        text_col = QVBoxLayout()
+        text_col.setSpacing(4)
+
+        titulo = QLabel("Gestión de Materias")
+        titulo.setStyleSheet("""
+            font-size: 28px; 
+            font-weight: 700; 
+            color: #F8FAFC; 
+            letter-spacing: -0.5px;
+            background: transparent;
+        """)
+
+        subtitulo = QLabel("Administra tus materias, asigna alumnos y controla inscripciones")
+        subtitulo.setStyleSheet("""
+            font-size: 13px; 
+            color: #64748B;
+            background: transparent;
+        """)
+
+        text_col.addWidget(titulo)
+        text_col.addWidget(subtitulo)
+
+        h.addWidget(icon_label)
+        h.addLayout(text_col)
+        h.addStretch()
 
         header.setLayout(h)
         layout.addWidget(header)
 
+        # TABS ESTILIZADOS
         self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
 
         self.tabRegistro = QWidget()
         self.tabAsignar = QWidget()
         self.tabMaterias = QWidget()
         self.tabDetalle = QWidget()
 
-        self.tabs.addTab(self.tabRegistro, "➕ Registrar")
-        self.tabs.addTab(self.tabAsignar, "🎯 Asignar")
-        self.tabs.addTab(self.tabMaterias, "📚 Materias CRUD")
+        self.tabs.addTab(self.tabRegistro, "📝 Registrar")
+        self.tabs.addTab(self.tabAsignar, "👥 Asignar")
+        self.tabs.addTab(self.tabMaterias, "📋 Materias")
         self.tabs.addTab(self.tabDetalle, "👨‍🎓 Detalle")
 
         layout.addWidget(self.tabs)
@@ -150,7 +226,7 @@ class MateriasWidget(QWidget):
         self.tablaMaterias.setColumnCount(3)
         self.tablaMaterias.setHorizontalHeaderLabels(["ID", "Materia", "Acciones"])
 
-        self.tablaMaterias.cellClicked.connect(self.ver_alumnos)  # 🔥 FIX IMPORTANTE
+        self.tablaMaterias.cellClicked.connect(self.ver_alumnos)
 
         self.estilo_tabla(self.tablaMaterias)
 
@@ -199,6 +275,7 @@ class MateriasWidget(QWidget):
 
         self.cargar_materias()
         self.cargar_combos()
+        self.tabs.setCurrentIndex(2)
 
     # =========================
     # MATERIAS
@@ -234,7 +311,7 @@ class MateriasWidget(QWidget):
             self.tablaMaterias.setCellWidget(i, 2, cont)
 
     # =========================
-    # CLICK MATERIA → ALUMNOS (FIX REAL)
+    # CLICK MATERIA → ALUMNOS
     # =========================
     def ver_alumnos(self, row, col):
 

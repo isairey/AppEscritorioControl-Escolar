@@ -28,7 +28,6 @@ class AsistenciaWidget(QWidget):
         self.txtBuscar = QLineEdit()
         self.txtBuscar.setPlaceholderText("🔎 Buscar alumno, materia o estado...")
         self.txtBuscar.textChanged.connect(self.filtrar_tabla)
-
         main_layout.addWidget(self.txtBuscar)
 
         # ===================== FORM =====================
@@ -48,16 +47,12 @@ class AsistenciaWidget(QWidget):
 
         form.addWidget(QLabel("Alumno"))
         form.addWidget(self.cbAlumno)
-
         form.addWidget(QLabel("Materia"))
         form.addWidget(self.cbMateria)
-
         form.addWidget(QLabel("Fecha"))
         form.addWidget(self.fecha)
-
         form.addWidget(QLabel("Estado"))
         form.addWidget(self.estado)
-
         form.addWidget(self.btnGuardar)
 
         main_layout.addLayout(form)
@@ -74,10 +69,18 @@ class AsistenciaWidget(QWidget):
             "Acción"
         ])
 
-        self.tabla.setAlternatingRowColors(True)
+        self.tabla.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.tabla.setAlternatingRowColors(False)  # 🔥 quitamos blanco/negro feo
         self.tabla.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabla.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tabla.verticalHeader().setVisible(False)
+
+        # 🔥 filas más altas (arregla botón aplastado)
+        self.tabla.verticalHeader().setDefaultSectionSize(40)
+
+        header = self.tabla.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
 
         main_layout.addWidget(self.tabla)
 
@@ -90,7 +93,7 @@ class AsistenciaWidget(QWidget):
         self.cargar_materias()
         self.cargar_tabla()
 
-    # ===================== ESTILOS =====================
+    # ===================== ESTILOS PRO =====================
     def styles(self):
         return """
         QWidget {
@@ -102,7 +105,7 @@ class AsistenciaWidget(QWidget):
         QLineEdit, QComboBox, QDateEdit {
             background-color: #334155;
             border: 1px solid #475569;
-            padding: 6px;
+            padding: 7px;
             border-radius: 8px;
             color: white;
         }
@@ -122,21 +125,32 @@ class AsistenciaWidget(QWidget):
             background-color: #1e293b;
             gridline-color: #334155;
             selection-background-color: #2563eb;
+            border-radius: 10px;
         }
 
         QHeaderView::section {
             background-color: #334155;
-            padding: 6px;
+            padding: 8px;
             font-weight: bold;
             color: white;
+            border: none;
         }
 
         QTableWidget::item {
-            padding: 6px;
+            padding: 10px;
+            color: #e5e7eb;
+        }
+
+        QTableWidget::item:selected {
+            background-color: #2563eb;
+        }
+
+        QTableWidget::item:hover {
+            background-color: #243244;
         }
         """
 
-    # ===================== CARGAR ALUMNOS =====================
+    # ===================== ALUMNOS =====================
     def cargar_alumnos(self):
         self.cbAlumno.clear()
         conn = conectar()
@@ -149,7 +163,7 @@ class AsistenciaWidget(QWidget):
 
         conn.close()
 
-    # ===================== CARGAR MATERIAS =====================
+    # ===================== MATERIAS =====================
     def cargar_materias(self):
         self.cbMateria.clear()
         conn = conectar()
@@ -182,7 +196,7 @@ class AsistenciaWidget(QWidget):
 
         self.cargar_tabla()
 
-    # ===================== CARGAR TABLA =====================
+    # ===================== TABLA =====================
     def cargar_tabla(self):
         conn = conectar()
         cursor = conn.cursor()
@@ -211,10 +225,27 @@ class AsistenciaWidget(QWidget):
 
         for fila, dato in enumerate(datos):
             for col, valor in enumerate(dato):
-                self.tabla.setItem(fila, col, QTableWidgetItem(str(valor)))
+                item = QTableWidgetItem(str(valor))
+                item.setTextAlignment(Qt.AlignCenter)
+                self.tabla.setItem(fila, col, item)
 
-            # Botón editar
             btn = QPushButton("✏ Editar")
+            btn.setMinimumHeight(30)
+            btn.setMinimumWidth(90)
+
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #3b82f6;
+                    color: white;
+                    border-radius: 8px;
+                    padding: 6px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #2563eb;
+                }
+            """)
+
             btn.clicked.connect(lambda _, r=dato: self.editar_asistencia(r))
 
             self.tabla.setCellWidget(fila, 5, btn)
@@ -225,6 +256,8 @@ class AsistenciaWidget(QWidget):
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Editar Asistencia")
+        dialog.setFixedWidth(320)
+
         layout = QVBoxLayout(dialog)
 
         cbEstado = QComboBox()
@@ -261,14 +294,11 @@ class AsistenciaWidget(QWidget):
     def filtrar_tabla(self):
         texto = self.txtBuscar.text().lower()
 
-        filtrados = []
-
-        for fila in self.datos:
-            alumno = str(fila[0]).lower()
-            materia = str(fila[1]).lower()
-            estado = str(fila[3]).lower()
-
-            if texto in alumno or texto in materia or texto in estado:
-                filtrados.append(fila)
+        filtrados = [
+            fila for fila in self.datos
+            if texto in str(fila[0]).lower()
+            or texto in str(fila[1]).lower()
+            or texto in str(fila[3]).lower()
+        ]
 
         self.mostrar_tabla(filtrados)
