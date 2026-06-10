@@ -80,7 +80,7 @@ class MateriasWidget(QWidget):
         h.setSpacing(20)
 
         # Icono grande
-        icon_label = QLabel("📚")
+        icon_label = QLabel("")
         icon_label.setStyleSheet("font-size: 48px; background: transparent;")
 
         # Textos
@@ -122,10 +122,10 @@ class MateriasWidget(QWidget):
         self.tabMaterias = QWidget()
         self.tabDetalle = QWidget()
 
-        self.tabs.addTab(self.tabRegistro, "📝 Registrar")
-        self.tabs.addTab(self.tabAsignar, "👥 Asignar")
-        self.tabs.addTab(self.tabMaterias, "📋 Materias")
-        self.tabs.addTab(self.tabDetalle, "👨‍🎓 Detalle")
+        self.tabs.addTab(self.tabRegistro, " Registrar")
+        self.tabs.addTab(self.tabAsignar, " Asignar")
+        self.tabs.addTab(self.tabMaterias, " Materias")
+        self.tabs.addTab(self.tabDetalle, " Detalle")
 
         layout.addWidget(self.tabs)
         self.setLayout(layout)
@@ -186,7 +186,7 @@ class MateriasWidget(QWidget):
         self.nombre = QLineEdit()
         self.nombre.setPlaceholderText("Nombre de la materia")
 
-        self.btnGuardar = QPushButton("💾 Guardar Materia")
+        self.btnGuardar = QPushButton(" Guardar Materia")
         self.btnGuardar.clicked.connect(self.guardar)
 
         layout.addWidget(self.nombre)
@@ -204,7 +204,7 @@ class MateriasWidget(QWidget):
         self.comboAlumno = QComboBox()
         self.comboMateria = QComboBox()
 
-        self.btnAsignar = QPushButton("🎯 Asignar")
+        self.btnAsignar = QPushButton(" Asignar")
         self.btnAsignar.clicked.connect(self.asignar)
 
         layout.addWidget(QLabel("Alumno"))

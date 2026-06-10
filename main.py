@@ -73,12 +73,12 @@ class MainWindow(QMainWindow):
         sideLayout.addWidget(logoSub)
 
         # Botones
-        self.btnDashboard = QPushButton(" 🏠  Dashboard")
-        self.btnAlumnos = QPushButton(" 👨‍🎓  Alumnos")
-        self.btnMaterias = QPushButton(" 📚  Materias")
-        self.btnCalificaciones = QPushButton(" 📝  Calificaciones")
-        self.btnAsistencia = QPushButton(" 📅  Asistencia")
-        self.btnReportes = QPushButton(" 📊  Reportes")
+        self.btnDashboard = QPushButton("   Dashboard")
+        self.btnAlumnos = QPushButton("   Alumnos")
+        self.btnMaterias = QPushButton("   Materias")
+        self.btnCalificaciones = QPushButton("   Calificaciones")
+        self.btnAsistencia = QPushButton("   Asistencia")
+        self.btnReportes = QPushButton("   Reportes")
 
         botones = [
             self.btnDashboard,

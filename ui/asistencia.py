@@ -21,14 +21,14 @@ class AsistenciaWidget(QWidget):
         main_layout.setSpacing(15)
 
         # ===================== TÍTULO =====================
-        titulo = QLabel("📋 Registro de Asistencia")
+        titulo = QLabel(" Registro de Asistencia")
         titulo.setFont(QFont("Arial", 18, QFont.Bold))
         titulo.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(titulo)
 
         # ===================== BUSCADOR =====================
         self.txtBuscar = QLineEdit()
-        self.txtBuscar.setPlaceholderText("🔎 Buscar alumno, materia o estado...")
+        self.txtBuscar.setPlaceholderText(" Buscar alumno, materia o estado...")
         self.txtBuscar.textChanged.connect(self.filtrar_tabla)
         main_layout.addWidget(self.txtBuscar)
 
@@ -45,7 +45,7 @@ class AsistenciaWidget(QWidget):
         self.estado = QComboBox()
         self.estado.addItems(["Presente", "Retardo", "Falta"])
 
-        self.btnGuardar = QPushButton("➕ Registrar")
+        self.btnGuardar = QPushButton(" Registrar")
 
         form.addWidget(QLabel("Alumno"))
         form.addWidget(self.cbAlumno)
