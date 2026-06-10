@@ -10,7 +10,6 @@ class Dashboard(QWidget):
 
         self.setObjectName("dashboard")
 
-        # ESTILO GLOBAL
         self.setStyleSheet("""
             QWidget {
                 background-color: #0B0F1A;
@@ -18,56 +17,48 @@ class Dashboard(QWidget):
                 font-family: 'Segoe UI', sans-serif;
             }
             QLabel {
-                color: #CBD5E1;
+                color: #E2E8F0;
             }
             QListWidget {
-                background-color: #1E293B;
+                background-color: #0F172A;
+                border: none;
                 border-radius: 12px;
                 padding: 10px;
+                color: #94A3B8;
             }
             QListWidget::item {
                 padding: 10px;
-                border-bottom: 1px solid #334155;
+                border-bottom: 1px solid #1E293B;
             }
         """)
 
         mainLayout = QVBoxLayout()
-        mainLayout.setContentsMargins(30, 30, 30, 30)
-        mainLayout.setSpacing(24)
+        mainLayout.setContentsMargins(40, 40, 40, 40)
+        mainLayout.setSpacing(20)
 
         # ==========================
-        # HEADER SIN BORDES
+        # HEADER
         # ==========================
         header = QFrame()
-        header.setFixedHeight(120)
-
-        header.setStyleSheet("""
-            QFrame {
-                background-color: #1E293B;
-                border-radius: 20px;
-            }
-        """)
+        header.setFixedHeight(100)
+        header.setStyleSheet("background-color: #1E293B; border-radius: 16px;")
 
         headerLayout = QHBoxLayout()
-        headerLayout.setContentsMargins(30, 20, 30, 20)
+        headerLayout.setContentsMargins(30, 0, 30, 0)
 
-        icon_label = QLabel("🎓")
-        icon_label.setStyleSheet("font-size: 48px;")
+        # TITULO
+        titulo = QLabel("TeacherDesk Pro")
+        titulo.setStyleSheet("font-size: 26px; font-weight: 600; color: #F8FAFC;")
 
-        text_col = QVBoxLayout()
-        text_col.setSpacing(2)
+        fecha = QLabel(QDate.currentDate().toString("dddd, dd MMMM yyyy").title())
+        fecha.setStyleSheet("font-size: 14px; color: #64748B; margin-top: 5px;")
 
-        titulo = QLabel("TeacherDesk")
-        titulo.setStyleSheet("font-size: 28px; font-weight: 700; color: #F8FAFC;")
+        titleLayout = QVBoxLayout()
+        titleLayout.addWidget(titulo)
+        titleLayout.addWidget(fecha)
+        titleLayout.addStretch()
 
-        fecha = QLabel(QDate.currentDate().toString("dddd, dd 'de' MMMM 'de' yyyy"))
-        fecha.setStyleSheet("font-size: 13px; color: #64748B;")
-
-        text_col.addWidget(titulo)
-        text_col.addWidget(fecha)
-
-        headerLayout.addWidget(icon_label)
-        headerLayout.addLayout(text_col)
+        headerLayout.addLayout(titleLayout)
         headerLayout.addStretch()
 
         header.setLayout(headerLayout)
@@ -78,11 +69,11 @@ class Dashboard(QWidget):
         # TARJETAS
         # ==========================
         cards = QHBoxLayout()
-        cards.setSpacing(20)
+        cards.setSpacing(15)
 
-        self.cardAlumnos = self.crear_card("👨‍🎓", "Total Alumnos", "#3B82F6")
-        self.cardMaterias = self.crear_card("📚", "Total Materias", "#8B5CF6")
-        self.cardPromedio = self.crear_card("📊", "Promedio General", "#10B981")
+        self.cardAlumnos = self.crear_card("ALUMNOS", "Total Alumnos", "#3B82F6")
+        self.cardMaterias = self.crear_card("MATERIAS", "Total Materias", "#8B5CF6")
+        self.cardPromedio = self.crear_card("PROMEDIO", "Promedio General", "#10B981")
 
         cards.addWidget(self.cardAlumnos["frame"])
         cards.addWidget(self.cardMaterias["frame"])
@@ -94,104 +85,68 @@ class Dashboard(QWidget):
         # PANEL INFERIOR
         # ==========================
         bottom = QHBoxLayout()
-        bottom.setSpacing(20)
+        bottom.setSpacing(15)
 
         # ACTIVIDAD
         actividadFrame = QFrame()
-        actividadFrame.setStyleSheet("""
-            QFrame {
-                background-color: #1E293B;
-                border-radius: 20px;
-            }
-        """)
+        actividadFrame.setStyleSheet("background-color: #1E293B; border-radius: 16px;")
 
         actividadLayout = QVBoxLayout()
         actividadLayout.setContentsMargins(24, 24, 24, 24)
-        actividadLayout.setSpacing(16)
+        actividadLayout.setSpacing(12)
 
-        actividadTitulo = QHBoxLayout()
-        
-        actividadIcon = QLabel("⚡")
-        actividadIcon.setStyleSheet("font-size: 24px;")
-
-        actividadLabel = QLabel("Actividad Reciente")
-        actividadLabel.setStyleSheet("font-size: 18px; font-weight: 700; color: #F8FAFC;")
-
-        actividadTitulo.addWidget(actividadIcon)
-        actividadTitulo.addWidget(actividadLabel)
-        actividadTitulo.addStretch()
+        actividadLabel = QLabel("ACTIVIDAD RECIENTE")
+        actividadLabel.setStyleSheet("font-size: 14px; font-weight: 600; color: #64748B; letter-spacing: 1px;")
 
         self.actividad = QListWidget()
         self.actividad.setStyleSheet("""
             QListWidget {
                 background-color: #0F172A;
-                border-radius: 12px;
-                padding: 8px;
+                border-radius: 10px;
+                padding: 5px;
             }
             QListWidget::item {
                 padding: 12px;
                 border-bottom: 1px solid #1E293B;
+                color: #CBD5E1;
             }
         """)
 
-        actividadLayout.addLayout(actividadTitulo)
+        actividadLayout.addWidget(actividadLabel)
         actividadLayout.addWidget(self.actividad)
 
         actividadFrame.setLayout(actividadLayout)
 
         # RESUMEN
         resumenFrame = QFrame()
-        resumenFrame.setStyleSheet("""
-            QFrame {
-                background-color: #1E293B;
-                border-radius: 20px;
-            }
-        """)
+        resumenFrame.setStyleSheet("background-color: #1E293B; border-radius: 16px;")
 
         resumenLayout = QVBoxLayout()
         resumenLayout.setContentsMargins(24, 24, 24, 24)
-        resumenLayout.setSpacing(16)
+        resumenLayout.setSpacing(12)
 
-        resumenTitulo = QHBoxLayout()
-        
-        resumenIcon = QLabel("📈")
-        resumenIcon.setStyleSheet("font-size: 24px;")
-
-        resumenLabel = QLabel("Resumen Escolar")
-        resumenLabel.setStyleSheet("font-size: 18px; font-weight: 700; color: #F8FAFC;")
-
-        resumenTitulo.addWidget(resumenIcon)
-        resumenTitulo.addWidget(resumenLabel)
-        resumenTitulo.addStretch()
+        resumenLabel = QLabel("RESUMEN ESCOLAR")
+        resumenLabel.setStyleSheet("font-size: 14px; font-weight: 600; color: #64748B; letter-spacing: 1px;")
 
         self.lblResumen = QLabel()
         self.lblResumen.setWordWrap(True)
-        self.lblResumen.setStyleSheet("font-size: 14px; color: #94A3B8; line-height: 24px;")
+        self.lblResumen.setStyleSheet("font-size: 14px; color: #94A3B8; line-height: 26px;")
 
         # Estado
         EstadoFrame = QFrame()
-        EstadoFrame.setStyleSheet("""
-            QFrame {
-                background-color: #10B981;
-                border-radius: 10px;
-                padding: 12px;
-                margin-top: 10px;
-            }
-        """)
+        EstadoFrame.setStyleSheet("background-color: #064E3B; border-radius: 8px; padding: 14px; margin-top: 8px;")
 
         EstadoLayout = QHBoxLayout()
         
-        estadoIcon = QLabel("🟢")
-        estadoLabel = QLabel("Sistema Operativo")
-        estadoLabel.setStyleSheet("font-weight: 700; color: white;")
+        EstadoLabel = QLabel("SISTEMA ACTIVO")
+        EstadoLabel.setStyleSheet("font-size: 13px; font-weight: 600; color: #34D399; letter-spacing: 1px;")
 
-        EstadoLayout.addWidget(estadoIcon)
-        EstadoLayout.addWidget(estadoLabel)
+        EstadoLayout.addWidget(EstadoLabel)
         EstadoLayout.addStretch()
 
         EstadoFrame.setLayout(EstadoLayout)
 
-        resumenLayout.addLayout(resumenTitulo)
+        resumenLayout.addWidget(resumenLabel)
         resumenLayout.addWidget(self.lblResumen)
         resumenLayout.addWidget(EstadoFrame)
 
@@ -209,49 +164,30 @@ class Dashboard(QWidget):
     # ==========================
     # CREAR TARJETAS
     # ==========================
-    def crear_card(self, icono, titulo, color):
+    def crear_card(self, titulo_corto, titulo_largo, color):
 
         frame = QFrame()
-        frame.setStyleSheet("""
-            QFrame {
-                background-color: #1E293B;
-                border-radius: 20px;
-            }
-        """)
+        frame.setStyleSheet("background-color: #1E293B; border-radius: 16px;")
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(12)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(10)
 
-        header = QFrame()
-        header.setFixedHeight(60)
-        header.setStyleSheet(f"""
-            QFrame {{
-                background-color: {color};
-                border-radius: 12px;
-            }}
-        """)
+        # TITULO(CHICO)
+        title = QLabel(titulo_corto)
+        title.setStyleSheet(f"font-size: 13px; font-weight: 600; color: {color}; letter-spacing: 1px;")
 
-        headerLayout = QVBoxLayout()
-        
-        icon = QLabel(icono)
-        icon.setAlignment(Qt.AlignCenter)
-        icon.setStyleSheet("font-size: 28px;")
-        
-        headerLayout.addWidget(icon)
-        header.setLayout(headerLayout)
-
-        title = QLabel(titulo)
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 14px; font-weight: 600; color: #94A3B8;")
-
+        # VALOR GRANDE
         value = QLabel("0")
-        value.setAlignment(Qt.AlignCenter)
-        value.setStyleSheet("font-size: 36px; font-weight: 700; color: #F8FAFC;")
+        value.setStyleSheet("font-size: 42px; font-weight: 700; color: #F8FAFC; margin-top: 10px;")
 
-        layout.addWidget(header)
+        # DESCRIPCION
+        desc = QLabel(titulo_largo)
+        desc.setStyleSheet("font-size: 13px; color: #64748B;")
+
         layout.addWidget(title)
         layout.addWidget(value)
+        layout.addWidget(desc)
         layout.addStretch()
 
         frame.setLayout(layout)
@@ -284,16 +220,13 @@ class Dashboard(QWidget):
         self.cardPromedio["valor"].setText(str(promedio))
 
         self.actividad.clear()
-        self.actividad.addItem(f"  👨‍🎓 Alumnos: {alumnos}")
-        self.actividad.addItem(f"  📚 Materias: {materias}")
-        self.actividad.addItem(f"  📊 Promedio: {promedio}")
+        self.actividad.addItem(f"Alumnos registrados: {alumnos}")
+        self.actividad.addItem(f"Materias activas: {materias}")
+        self.actividad.addItem(f"Promedio general: {promedio}")
 
         self.lblResumen.setText(
-            f"""
-- <b>{alumnos}</b> Alumnos
-- <b>{materias}</b> Materias  
-- <b>{promedio}</b> Promedio
-
-<b>Actualizado:</b> {QDate.currentDate().toString("dd/MM/yyyy")}
-            """
+            f"<b>{alumnos}</b> Alumnos<br>"
+            f"<b>{materias}</b> Materias<br>"
+            f"<b>{promedio}</b> Promedio<br><br>"
+            f"Actualizado: {QDate.currentDate().toString('dd/MM/yyyy')}"
         )

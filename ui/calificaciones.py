@@ -26,7 +26,7 @@ class CalificacionesWidget(QWidget):
 
         h = QVBoxLayout()
 
-        titulo = QLabel("📊 Gestión de Calificaciones")
+        titulo = QLabel(" Gestión de Calificaciones")
         titulo.setStyleSheet("font-size:30px;font-weight:bold;color:white;")
 
         subtitulo = QLabel("Sistema escolar profesional")
@@ -60,8 +60,8 @@ class CalificacionesWidget(QWidget):
         self.tabRegistro = QWidget()
         self.tabLista = QWidget()
 
-        self.tabs.addTab(self.tabRegistro, "➕ Registro")
-        self.tabs.addTab(self.tabLista, "📋 Lista")
+        self.tabs.addTab(self.tabRegistro, " Registro")
+        self.tabs.addTab(self.tabLista, " Lista")
 
         layout.addWidget(self.tabs)
         self.setLayout(layout)
@@ -77,30 +77,25 @@ class CalificacionesWidget(QWidget):
         layout = QVBoxLayout()
 
         card = QFrame()
-        card.setStyleSheet("""
-            QFrame{
-                background:#0B1220;
-                border-radius:15px;
-                padding:20px;
-            }
-        """)
+        card.setStyleSheet("background:#0B1220;border-radius:15px;padding:20px;")
 
         form = QGridLayout()
 
         self.cbAlumno = QComboBox()
         self.cbMateria = QComboBox()
+        
+        # NUEVO: Selector de parcial
+        self.cbParcial = QComboBox()
+        self.cbParcial.addItems(["1er Parcial", "2do Parcial", "3er Parcial"])
 
         self.calificacion = QDoubleSpinBox()
         self.calificacion.setRange(0, 10)
         self.calificacion.setDecimals(1)
 
-        for w in [self.cbAlumno, self.cbMateria, self.calificacion]:
+        for w in [self.cbAlumno, self.cbMateria, self.cbParcial, self.calificacion]:
             w.setStyleSheet("""
-                background:#111827;
-                border:1px solid #1F2937;
-                border-radius:10px;
-                padding:10px;
-                color:white;
+                background:#111827;border:1px solid #1F2937;
+                border-radius:10px;padding:10px;color:white;
             """)
 
         form.addWidget(QLabel("Alumno"), 0, 0)
@@ -108,21 +103,18 @@ class CalificacionesWidget(QWidget):
 
         form.addWidget(QLabel("Materia"), 0, 1)
         form.addWidget(self.cbMateria, 1, 1)
+        
+        form.addWidget(QLabel("Parcial"), 0, 2)
+        form.addWidget(self.cbParcial, 1, 2)
 
         form.addWidget(QLabel("Calificación"), 2, 0)
         form.addWidget(self.calificacion, 3, 0, 1, 2)
 
-        self.btnGuardar = QPushButton("💾 Guardar")
+        self.btnGuardar = QPushButton(" Guardar")
         self.btnGuardar.clicked.connect(self.guardar_calificacion)
-
         self.btnGuardar.setStyleSheet("""
-            QPushButton{
-                background:#16A34A;
-                color:white;
-                padding:12px;
-                border-radius:10px;
-                font-weight:bold;
-            }
+            QPushButton{background:#16A34A;color:white;
+            padding:12px;border-radius:10px;font-weight:bold;}
         """)
 
         form.addWidget(self.btnGuardar, 4, 0, 1, 2)
@@ -138,7 +130,7 @@ class CalificacionesWidget(QWidget):
         layout = QVBoxLayout()
 
         self.buscar = QLineEdit()
-        self.buscar.setPlaceholderText("🔍 Buscar alumno o materia...")
+        self.buscar.setPlaceholderText(" Buscar alumno o materia...")
         self.buscar.textChanged.connect(self.buscar_calificacion)
 
         self.buscar.setStyleSheet("""
@@ -161,9 +153,35 @@ class CalificacionesWidget(QWidget):
             "Calificación", "Promedio", "Acciones"
         ])
 
+        # FILAS MÁS ALTAS
+        self.tabla.verticalHeader().setDefaultSectionSize(50)  # <-- altO de fila
+
         self.tabla.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla.verticalHeader().setVisible(False)
         self.tabla.setSelectionBehavior(QTableWidget.SelectRows)
+        
+        # ESTILO DE TABLA
+        self.tabla.setStyleSheet("""
+            QTableWidget {
+                background-color: #0B1220;
+                border: none;
+                border-radius: 10px;
+            }
+            QTableWidget::item {
+                padding: 10px;
+                color: #E2E8F0;
+            }
+            QTableWidget::item:selected {
+                background-color: #2563EB;
+            }
+            QHeaderView::section {
+                background-color: #1E293B;
+                padding: 12px;
+                color: #94A3B8;
+                font-weight: bold;
+                border: none;
+            }
+        """)
 
         layout.addWidget(self.tabla)
 
@@ -206,38 +224,53 @@ class CalificacionesWidget(QWidget):
 
     def guardar_calificacion(self):
 
+        if self.cbAlumno.count() == 0:
+            QMessageBox.warning(self, "Aviso", "No hay alumnos.")
+            return
+
+        if self.cbMateria.count() == 0:
+            QMessageBox.warning(self, "Aviso", "No hay materias.")
+            return
+        
+        if self.calificacion.value() == 0:
+            QMessageBox.warning(self, "Aviso", "Ingresa una calificación válida.")
+            return
+
+        alu_id = self.cbAlumno.currentData()
+        mat_id = self.cbMateria.currentData()
+        
+        # Obtener parcial (1, 2, 3)
+        parcial = self.cbParcial.currentIndex() + 1
+
+        if alu_id is None or mat_id is None:
+            QMessageBox.warning(self, "Aviso", "Selecciona alumno y materia.")
+            return
+
         conn = conectar()
         cursor = conn.cursor()
 
-        alumno_id = self.cbAlumno.currentData()
-        materia_id = self.cbMateria.currentData()
-
+        # Verificar duplicado (incluyendo parcial)
         if self.id_actual is None:
+            cursor.execute("""
+               SELECT id FROM calificaciones
+                WHERE alumno_id = ? AND materia_id = ? AND parcial = ?
+            """, (alu_id, mat_id, parcial))
+
+            if cursor.fetchone():
+                QMessageBox.warning(self, "Duplicado", "Ya existe calificación para este parcial.")
+                conn.close()
+                return
 
             cursor.execute("""
-                INSERT INTO calificaciones
-                (alumno_id,materia_id,calificacion)
-                VALUES(?,?,?)
-            """, (
-                alumno_id,
-                materia_id,
-                self.calificacion.value()
-            ))
-
+                INSERT INTO calificaciones (alumno_id, materia_id, parcial, calificacion)
+                VALUES (?, ?, ?, ?)
+            """, (alu_id, mat_id, parcial, self.calificacion.value()))
         else:
-
             cursor.execute("""
                 UPDATE calificaciones
-                SET alumno_id=?,
-                    materia_id=?,
-                    calificacion=?
-                WHERE id=?
-            """, (
-                alumno_id,
-                materia_id,
-                self.calificacion.value(),
-                self.id_actual
-            ))
+                SET alumno_id = ?, materia_id = ?, parcial = ?, calificacion = ?
+                WHERE id = ?
+            """, (alu_id, mat_id, parcial, self.calificacion.value(), self.id_actual))
 
         conn.commit()
         conn.close()
@@ -260,8 +293,9 @@ class CalificacionesWidget(QWidget):
                 c.calificacion,
                 c.alumno_id
             FROM calificaciones c
-            INNER JOIN alumnos a ON c.alumno_id=a.id
-            INNER JOIN materias m ON c.materia_id=m.id
+            INNER JOIN alumnos a ON c.alumno_id = a.id
+            INNER JOIN materias m ON c.materia_id = m.id
+            ORDER BY c.id DESC
         """)
 
         datos = cursor.fetchall()
@@ -273,14 +307,17 @@ class CalificacionesWidget(QWidget):
 
             promedio = self.promedio_alumno(dato[4])
 
-            self.tabla.setItem(fila,0,QTableWidgetItem(str(dato[0])))
-            self.tabla.setItem(fila,1,QTableWidgetItem(dato[1]))
-            self.tabla.setItem(fila,2,QTableWidgetItem(dato[2]))
-            self.tabla.setItem(fila,3,QTableWidgetItem(str(dato[3])))
-            self.tabla.setItem(fila,4,QTableWidgetItem(str(promedio)))
+            self.tabla.setItem(fila, 0, QTableWidgetItem(str(dato[0])))
+            self.tabla.setItem(fila, 1, QTableWidgetItem(dato[1]))
+            self.tabla.setItem(fila, 2, QTableWidgetItem(dato[2]))
+            self.tabla.setItem(fila, 3, QTableWidgetItem(str(dato[3])))
+            self.tabla.setItem(fila, 4, QTableWidgetItem(str(promedio)))
 
             btn_edit = QPushButton("✏️")
             btn_del = QPushButton("🗑")
+
+            btn_edit.setStyleSheet("background:#3B82F6; padding:5px; border-radius:5px;")
+            btn_del.setStyleSheet("background:#EF4444; padding:5px; border-radius:5px;")
 
             btn_edit.clicked.connect(
                 lambda _, idc=dato[0]: self.cargar_para_editar(idc)
@@ -292,12 +329,13 @@ class CalificacionesWidget(QWidget):
 
             cont = QWidget()
             h = QHBoxLayout(cont)
-            h.setContentsMargins(0,0,0,0)
+            h.setContentsMargins(0, 0, 0, 0)
+            h.setSpacing(5)
 
             h.addWidget(btn_edit)
             h.addWidget(btn_del)
 
-            self.tabla.setCellWidget(fila,5,cont)
+            self.tabla.setCellWidget(fila, 5, cont)
 
     def cargar_para_editar(self, id_calificacion):
 
@@ -305,10 +343,10 @@ class CalificacionesWidget(QWidget):
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT alumno_id,materia_id,calificacion
+            SELECT alumno_id, materia_id, calificacion
             FROM calificaciones
-            WHERE id=?
-        """,(id_calificacion,))
+            WHERE id = ?
+        """, (id_calificacion,))
 
         dato = cursor.fetchone()
         conn.close()
@@ -332,22 +370,34 @@ class CalificacionesWidget(QWidget):
 
     def eliminar(self, id_calificacion):
 
-        conn = conectar()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "DELETE FROM calificaciones WHERE id=?",
-            (id_calificacion,)
+        respuesta = QMessageBox.question(
+            self,
+            "Confirmar",
+            "¿Eliminar esta calificación?",
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        conn.commit()
-        conn.close()
+        if respuesta == QMessageBox.Yes:
+            conn = conectar()
+            cursor = conn.cursor()
 
-        self.cargar_tabla()
+            cursor.execute(
+                "DELETE FROM calificaciones WHERE id = ?",
+                (id_calificacion,)
+            )
+
+            conn.commit()
+            conn.close()
+
+            self.cargar_tabla()
 
     def buscar_calificacion(self):
 
         texto = self.buscar.text()
+
+        if not texto:
+            self.cargar_tabla()
+            return
 
         conn = conectar()
         cursor = conn.cursor()
@@ -360,8 +410,8 @@ class CalificacionesWidget(QWidget):
                 c.calificacion,
                 c.alumno_id
             FROM calificaciones c
-            INNER JOIN alumnos a ON c.alumno_id=a.id
-            INNER JOIN materias m ON c.materia_id=m.id
+            INNER JOIN alumnos a ON c.alumno_id = a.id
+            INNER JOIN materias m ON c.materia_id = m.id
             WHERE a.nombre LIKE ?
             OR a.apellido LIKE ?
             OR m.nombre LIKE ?
@@ -380,12 +430,13 @@ class CalificacionesWidget(QWidget):
 
             promedio = self.promedio_alumno(dato[4])
 
-            self.tabla.setItem(fila,0,QTableWidgetItem(str(dato[0])))
-            self.tabla.setItem(fila,1,QTableWidgetItem(dato[1]))
-            self.tabla.setItem(fila,2,QTableWidgetItem(dato[2]))
-            self.tabla.setItem(fila,3,QTableWidgetItem(str(dato[3])))
-            self.tabla.setItem(fila,4,QTableWidgetItem(str(promedio)))
+            self.tabla.setItem(fila, 0, QTableWidgetItem(str(dato[0])))
+            self.tabla.setItem(fila, 1, QTableWidgetItem(dato[1]))
+            self.tabla.setItem(fila, 2, QTableWidgetItem(dato[2]))
+            self.tabla.setItem(fila, 3, QTableWidgetItem(str(dato[3])))
+            self.tabla.setItem(fila, 4, QTableWidgetItem(str(promedio)))
 
     def limpiar(self):
 
         self.calificacion.setValue(0)
+        self.id_actual = None

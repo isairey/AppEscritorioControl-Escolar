@@ -34,7 +34,7 @@ class AlumnosWidget(QWidget):
 
         h = QVBoxLayout()
 
-        titulo = QLabel("👨‍🎓 Gestión de Alumnos")
+        titulo = QLabel(" Gestión de Alumnos")
         titulo.setStyleSheet("font-size:30px;font-weight:bold;color:white;")
 
         subtitulo = QLabel("Sistema escolar profesional")
@@ -72,8 +72,8 @@ class AlumnosWidget(QWidget):
         self.tabRegistro = QWidget()
         self.tabLista = QWidget()
 
-        self.tabs.addTab(self.tabRegistro, "➕ Registro")
-        self.tabs.addTab(self.tabLista, "📋 Lista")
+        self.tabs.addTab(self.tabRegistro, " Registro")
+        self.tabs.addTab(self.tabLista, " Lista")
 
         layout.addWidget(self.tabs)
         self.setLayout(layout)
@@ -139,7 +139,7 @@ class AlumnosWidget(QWidget):
         form.addWidget(QLabel("Grupo"), 2, 1)
         form.addWidget(self.grupo, 3, 1)
 
-        self.btnGuardar = QPushButton("💾 Guardar")
+        self.btnGuardar = QPushButton(" Guardar")
         self.btnGuardar.setStyleSheet("""
             QPushButton{
                 background:#16A34A;
@@ -174,7 +174,7 @@ class AlumnosWidget(QWidget):
 
         # BUSCADOR
         self.buscar = QLineEdit()
-        self.buscar.setPlaceholderText("🔍 Buscar alumno...")
+        self.buscar.setPlaceholderText(" Buscar alumno...")
 
         self.buscar.setFixedHeight(40)
 
@@ -298,8 +298,8 @@ class AlumnosWidget(QWidget):
                 )
 
             # BOTONES
-            btn_edit = QPushButton("✏️")
-            btn_del = QPushButton("🗑")
+            btn_edit = QPushButton("")
+            btn_del = QPushButton("")
 
             btn_edit.setStyleSheet("background:#2563EB;color:white;border-radius:6px;")
             btn_del.setStyleSheet("background:#DC2626;color:white;border-radius:6px;")

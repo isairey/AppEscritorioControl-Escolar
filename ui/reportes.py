@@ -77,7 +77,7 @@ class ReportesWidget(QWidget):
 
         headerLayout = QVBoxLayout()
 
-        titulo = QLabel("📊 Centro de Reportes")
+        titulo = QLabel(" Centro de Reportes")
         titulo.setObjectName("titulo")
 
         subtitulo = QLabel(
@@ -107,14 +107,14 @@ class ReportesWidget(QWidget):
 
         pdfLayout = QVBoxLayout()
 
-        pdfTitulo = QLabel("📄 Reporte de Alumnos")
+        pdfTitulo = QLabel(" Reporte de Alumnos")
         pdfTitulo.setStyleSheet("font-size:22px;font-weight:bold;color:white;")
 
         pdfDesc = QLabel("Genera un documento PDF con todos los alumnos registrados.")
         pdfDesc.setWordWrap(True)
         pdfDesc.setStyleSheet("color:#94A3B8;font-size:13px;")
 
-        self.btnPDF = QPushButton("📄 Generar PDF Alumnos")
+        self.btnPDF = QPushButton(" Generar PDF Alumnos")
         self.btnPDF.setStyleSheet("""
             QPushButton{background:#DC2626;border:none;border-radius:12px;padding:14px;font-weight:bold;}
             QPushButton:hover{background:#EF4444;}
@@ -134,14 +134,14 @@ class ReportesWidget(QWidget):
 
         materiasLayout = QVBoxLayout()
 
-        materiasTitulo = QLabel("📚 Reporte de Materias")
+        materiasTitulo = QLabel(" Reporte de Materias")
         materiasTitulo.setStyleSheet("font-size:22px;font-weight:bold;color:white;")
 
         materiasDesc = QLabel("Genera un PDF con las materias y alumnos inscritos.")
         materiasDesc.setWordWrap(True)
         materiasDesc.setStyleSheet("color:#94A3B8;font-size:13px;")
 
-        self.btnPDFMaterias = QPushButton("📚 Generar PDF Materias")
+        self.btnPDFMaterias = QPushButton(" Generar PDF Materias")
         self.btnPDFMaterias.setStyleSheet("""
             QPushButton{background:#7C3AED;border:none;border-radius:12px;padding:14px;font-weight:bold;}
             QPushButton:hover{background:#8B5CF6;}
@@ -161,14 +161,14 @@ class ReportesWidget(QWidget):
 
         excelLayout = QVBoxLayout()
 
-        excelTitulo = QLabel("📈 Reporte Excel")
+        excelTitulo = QLabel(" Reporte Excel")
         excelTitulo.setStyleSheet("font-size:22px;font-weight:bold;color:white;")
 
         excelDesc = QLabel("Exporta todos los alumnos a Excel.")
         excelDesc.setWordWrap(True)
         excelDesc.setStyleSheet("color:#94A3B8;font-size:13px;")
 
-        self.btnExcel = QPushButton("📈 Exportar Excel")
+        self.btnExcel = QPushButton(" Exportar Excel")
         self.btnExcel.setStyleSheet("""
             QPushButton{background:#16A34A;border:none;border-radius:12px;padding:14px;font-weight:bold;}
             QPushButton:hover{background:#22C55E;}
@@ -191,7 +191,7 @@ class ReportesWidget(QWidget):
         # INFO EXTRA
         # ==========================
         self.info = QLabel(
-            f"💡 Los reportes se guardarán en: {obtener_escritorio()}"
+            f" Los reportes se guardarán en: {obtener_escritorio()}"
         )
 
         self.info.setStyleSheet("color:#60A5FA;font-size:13px;padding:10px;")
@@ -353,13 +353,13 @@ class ReportesWidget(QWidget):
         layout = QVBoxLayout()
         layout.setSpacing(20)
 
-        titulo = QLabel("📚 Selecciona una materia:")
+        titulo = QLabel(" Selecciona una materia:")
         titulo.setStyleSheet("font-size: 18px; font-weight: bold;")
 
         layout.addWidget(titulo)
 
         for m in materias:
-            btn = QPushButton(f"📚 {m[1]}")
+            btn = QPushButton(f" {m[1]}")
             btn.clicked.connect(lambda checked, materia_id=m[0], materia_nombre=m[1]: self.generar_pdf_materia_especifica(materia_id, materia_nombre, dialogo))
             layout.addWidget(btn)
 
