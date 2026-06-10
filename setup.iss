@@ -11,8 +11,8 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Files]
-Source="dist\TeacherDeskPro.exe"; DestDir="{app}"; Flags: ignoreversion
-Source="dist\data"; DestDir="{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: dist\TeacherDeskPro.exe; DestDir: {app}
+Source: dist\data; DestDir: {app}\data; Flags:ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\TeacherDesk Pro"; Filename: "{app}\TeacherDeskPro.exe"
