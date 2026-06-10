@@ -9,6 +9,8 @@ class AsistenciaWidget(QWidget):
     def __init__(self):
         super().__init__()
 
+        
+
         self.setWindowTitle("Control de Asistencia")
         self.setStyleSheet(self.styles())
 
@@ -170,32 +172,80 @@ class AsistenciaWidget(QWidget):
         cursor = conn.cursor()
 
         cursor.execute("SELECT id, nombre FROM materias")
-
-        for m in cursor.fetchall():
+        materias = cursor.fetchall()  # Guardar en variable primero
+        print(f"Materias cargadas: {len(materias)}")  # Ahora sí funciona
+        for m in materias:
             self.cbMateria.addItem(m[1], m[0])
 
         conn.close()
 
+   # ===================== REGISTRAR =====================
     # ===================== REGISTRAR =====================
     def registrar(self):
+
+        
+        if self.cbAlumno.count() == 0:
+            QMessageBox.warning(
+                self,
+                "Aviso",
+                "No hay alumnos registrados."
+            )
+            return
+
+        if self.cbMateria.count() == 0:
+            QMessageBox.warning(
+                self,
+                "Aviso",
+                "No hay materias registradas."
+            )
+            return
+
+        # Obtener los valores
+        alumno_id = self.cbAlumno.currentData()
+        materia_id = self.cbMateria.currentData()
+        fecha = self.fecha.date().toString("yyyy-MM-dd")
+
         conn = conectar()
         cursor = conn.cursor()
 
+        # Verificar si ya existe LAS TRES condiciones juntas
         cursor.execute("""
-        INSERT INTO asistencia (alumno_id, materia_id, fecha, estado)
-        VALUES (?, ?, ?, ?)
-        """, (
-            self.cbAlumno.currentData(),
-            self.cbMateria.currentData(),
-            self.fecha.date().toString("yyyy-MM-dd"),
-            self.estado.currentText()
-        ))
+            SELECT id FROM asistencia
+            WHERE alumno_id = ?
+            AND materia_id = ?
+            AND fecha = ?
+        """, (alumno_id, materia_id, fecha))
+
+        existe = cursor.fetchone()
+        print(existe) 
+        print(alumno_id, materia_id, fecha)
+        print(f"alumno: {alumno_id}, materia: {materia_id}, fecha: {fecha}")
+        print(f"alumno index: {self.cbAlumno.currentIndex()}, materia index: {self.cbMateria.currentIndex()}")
+        if existe:
+            conn.close()
+            QMessageBox.warning(
+                self,
+                "Asistencia Duplicada",
+                "Este alumno ya tiene asistencia registrada para esta materia en esa fecha."
+            )
+            return
+
+        # Registrar nueva asistencia
+        cursor.execute("""
+            INSERT INTO asistencia (alumno_id, materia_id, fecha, estado)
+            VALUES (?, ?, ?, ?)
+        """, (alumno_id, materia_id, fecha, self.estado.currentText()))
 
         conn.commit()
         conn.close()
 
         self.cargar_tabla()
 
+        QMessageBox.information(
+            self,
+            "Correcto",
+            "Asistencia registrada correctamente."
+        )
     # ===================== TABLA =====================
     def cargar_tabla(self):
         conn = conectar()
@@ -302,3 +352,10 @@ class AsistenciaWidget(QWidget):
         ]
 
         self.mostrar_tabla(filtrados)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+
+        self.cargar_alumnos()
+        self.cargar_materias()
+        self.cargar_tabla()
