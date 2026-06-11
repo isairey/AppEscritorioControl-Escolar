@@ -111,7 +111,7 @@ Dashboard Principal
 # 📂 Estructura del Proyecto
 
 ```text
-ControlEscolar/
+AppEscritorioControl-Escolar/
 │
 ├── main.py
 │
@@ -145,9 +145,9 @@ ControlEscolar/
 ## Clonar el repositorio
 
 ```bash
-git clone https://github.com/usuario/control-escolar.git
+git clone https://github.com/isairey/AppEscritorioControl-Escolar.git
 
-cd control-escolar
+cd AppEscritorioControl-Escolar
 ```
 
 ## Crear entorno virtual
@@ -270,7 +270,7 @@ Especializado en:
 * Automatización de Procesos
 
 GitHub:
-https://github.com/isaireyes2003
+https://github.com/isairey
 
 </div>
 
