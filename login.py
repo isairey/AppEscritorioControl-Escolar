@@ -145,7 +145,7 @@ class LoginWindow(QWidget):
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, usuario, nombre
+            SELECT id, usuario, rol
             FROM usuarios
             WHERE usuario = ?
             AND password = ?
