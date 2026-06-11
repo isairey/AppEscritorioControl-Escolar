@@ -254,9 +254,9 @@ estado
 
 # 👨‍💻 Desarrollador
 
-<div align="center">
 
-## Isai Reyes Peña
+
+## Isai Reyes
 
 **Desarrollador Full Stack | Python | Java | Spring Boot | React | Vue.js**
 
@@ -272,7 +272,7 @@ Especializado en:
 GitHub:
 https://github.com/isairey
 
-</div>
+
 
 ---
 
