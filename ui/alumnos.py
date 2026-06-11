@@ -165,8 +165,6 @@ class AlumnosWidget(QWidget):
 
     # =========================================================
     # TABLA PRO
-    # =========================================================
-
     def ui_lista(self):
 
         layout = QVBoxLayout()
@@ -200,6 +198,9 @@ class AlumnosWidget(QWidget):
             "ID", "Nombre", "Apellido", "Grado", "Grupo", "Acciones"
         ])
 
+        # FILAS MÁS ALTAS
+        self.tabla.verticalHeader().setDefaultSectionSize(55)
+
         header = self.tabla.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
 
@@ -220,9 +221,13 @@ class AlumnosWidget(QWidget):
             QHeaderView::section{
                 background:#111827;
                 color:#94A3B8;
-                padding:8px;
+                padding:10px;
                 border:none;
                 font-weight:bold;
+            }
+
+            QTableWidget::item{
+                padding: 12px;
             }
         """)
 
@@ -297,28 +302,49 @@ class AlumnosWidget(QWidget):
                     QTableWidgetItem(str(alumno[col]))
                 )
 
-            # BOTONES
-            btn_edit = QPushButton("")
-            btn_del = QPushButton("")
+            btn_edit = QPushButton("Editar")
+            btn_edit.setFixedSize(55, 26)
+            btn_edit.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    color: #3B82F6;
+                    border: none;
+                    font-size: 12px;
+                    padding: 0px;
+                }
+                QPushButton:hover {
+                    background-color: rgba(59, 130, 246, 0.2);
+                }
+            """)
 
-            btn_edit.setStyleSheet("background:#2563EB;color:white;border-radius:6px;")
-            btn_del.setStyleSheet("background:#DC2626;color:white;border-radius:6px;")
+            btn_del = QPushButton("Eliminar")
+            btn_del.setFixedSize(60, 26)
+            btn_del.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    color: #EF4444;
+                    border: none;
+                    font-size: 12px;
+                    padding: 0px;
+                }
+                QPushButton:hover {
+                    background-color: rgba(239, 68, 68, 0.2);
+                }
+            """)
 
             btn_edit.clicked.connect(lambda _, a=alumno: self.cargar_para_editar(a))
             btn_del.clicked.connect(lambda _, id=alumno[0]: self.eliminar(id))
 
             cont = QWidget()
-            h = QHBoxLayout()
-            h.setContentsMargins(0, 0, 0, 0)
-            h.setSpacing(5)
-
+            h = QHBoxLayout(cont)
+            h.setContentsMargins(2, 0, 2, 0)
+            h.setSpacing(4)
+            h.addStretch()
             h.addWidget(btn_edit)
             h.addWidget(btn_del)
-
-            cont.setLayout(h)
+            h.addStretch()
 
             self.tabla.setCellWidget(fila, 5, cont)
-
     # =========================================================
     # EDITAR (NO DUPLICA)
     # =========================================================
