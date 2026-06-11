@@ -201,17 +201,60 @@ class MateriasWidget(QWidget):
     def ui_asignar(self):
         layout = QVBoxLayout()
 
+        card = QFrame()
+        card.setStyleSheet("background:#0B1220;border-radius:15px;padding:25px;")
+
+        form = QGridLayout()
+        form.setSpacing(15)
+
         self.comboAlumno = QComboBox()
         self.comboMateria = QComboBox()
 
-        self.btnAsignar = QPushButton(" Asignar")
+        for w in [self.comboAlumno, self.comboMateria]:
+            w.setStyleSheet("""
+                QComboBox {
+                    background-color: #111827;
+                    border: 1px solid #1F2937;
+                    border-radius: 10px;
+                    padding: 12px;
+                    color: white;
+                }
+                QComboBox:hover {
+                    border-color: #3B82F6;
+                }
+                QComboBox::drop-down {
+                    border: none;
+                    width: 30px;
+                }
+            """)
+
+        form.addWidget(QLabel("Alumno"), 0, 0)
+        form.addWidget(self.comboAlumno, 1, 0)
+
+        form.addWidget(QLabel("Materia"), 0, 1)
+        form.addWidget(self.comboMateria, 1, 1)
+
+        self.btnAsignar = QPushButton(" Asignar Alumno a Materia")
         self.btnAsignar.clicked.connect(self.asignar)
 
-        layout.addWidget(QLabel("Alumno"))
-        layout.addWidget(self.comboAlumno)
-        layout.addWidget(QLabel("Materia"))
-        layout.addWidget(self.comboMateria)
-        layout.addWidget(self.btnAsignar)
+        self.btnAsignar.setStyleSheet("""
+            QPushButton {
+                background-color: #16A34A;
+                color: white;
+                padding: 14px;
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #15803D;
+            }
+        """)
+
+        form.addWidget(self.btnAsignar, 2, 0, 1, 2)
+
+        card.setLayout(form)
+        layout.addWidget(card)
         layout.addStretch()
 
         self.tabAsignar.setLayout(layout)
@@ -384,20 +427,57 @@ class MateriasWidget(QWidget):
     # ASIGNAR
     # =========================
     def asignar(self):
-        alumno_id = self.comboAlumno.currentData()
-        materia_id = self.comboMateria.currentData()
+        # VALIDACIONES
+        if self.comboAlumno.count() == 0:
+            QMessageBox.warning(self, "Aviso", "No hay alumnos.")
+            return
+
+        if self.comboMateria.count() == 0:
+            QMessageBox.warning(self, "Aviso", "No hay materias.")
+            return
+
+        alu_id = self.comboAlumno.currentData()
+        mat_id = self.comboMateria.currentData()
+
+        if alu_id is None or mat_id is None:
+            QMessageBox.warning(self, "Aviso", "Selecciona alumno y materia.")
+            return
 
         conn = conectar()
         cursor = conn.cursor()
 
+        # VERIFICAR DUPLICADO
         cursor.execute("""
-            INSERT OR IGNORE INTO alumno_materia(alumno_id, materia_id)
+            SELECT id FROM alumno_materia
+            WHERE alumno_id = ? AND materia_id = ?
+        """, (alu_id, mat_id))
+
+        if cursor.fetchone():
+            QMessageBox.warning(
+                self,
+                "Duplicado",
+                "Este alumno ya está asignado a esta materia."
+            )
+            conn.close()
+            return
+
+        # INSERTAR
+        cursor.execute("""
+            INSERT INTO alumno_materia (alumno_id, materia_id)
             VALUES (?, ?)
-        """, (alumno_id, materia_id))
+        """, (alu_id, mat_id))
 
         conn.commit()
         conn.close()
 
+        QMessageBox.information(
+            self,
+            "Éxito",
+            "Alumno asignado a la materia correctamente."
+        )
+
+        self.comboAlumno.setCurrentIndex(0)
+        self.comboMateria.setCurrentIndex(0)
     # =========================
     # COMBOS
     # =========================
