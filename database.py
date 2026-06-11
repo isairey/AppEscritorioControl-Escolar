@@ -1,16 +1,19 @@
 import sqlite3
 import os
 
-DB_FOLDER = "data"
+# ==========================
+# CARPETA DE DATOS EN APPDATA
+# ==========================
+DB_FOLDER = os.path.join(os.environ["APPDATA"], "TeacherDeskPro")
 DB_NAME = os.path.join(DB_FOLDER, "escuela.db")
 
 
 def conectar():
+    os.makedirs(DB_FOLDER, exist_ok=True)
     return sqlite3.connect(DB_NAME)
 
 
 def crear_bd():
-
     os.makedirs(DB_FOLDER, exist_ok=True)
 
     conn = conectar()
@@ -52,35 +55,33 @@ def crear_bd():
     """)
 
     # =========================
-    # 🔥 ASIGNACIÓN ALUMNO - MATERIA (FALTABA)
+    # ASIGNACIÓN ALUMNO - MATERIA
     # =========================
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS alumno_materia(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         alumno_id INTEGER,
         materia_id INTEGER,
-        FOREIGN KEY(alumno_id) REFERENCES alumnos(id),
-        FOREIGN KEY(materia_id) REFERENCES materias(id)
+        UNIQUE(alumno_id, materia_id)
     )
     """)
 
     # =========================
-    # CALIFICACIONES (MEJORADA)
+    # CALIFICACIONES
     # =========================
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS calificaciones(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         alumno_id INTEGER,
         materia_id INTEGER,
+        parcial INTEGER,
         calificacion REAL,
-        fecha TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(alumno_id) REFERENCES alumnos(id),
-        FOREIGN KEY(materia_id) REFERENCES materias(id)
+        fecha TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
     # =========================
-    # ASISTENCIA (MEJORADA)
+    # ASISTENCIA
     # =========================
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS asistencia(
@@ -88,22 +89,10 @@ def crear_bd():
         alumno_id INTEGER,
         materia_id INTEGER,
         fecha TEXT DEFAULT CURRENT_TIMESTAMP,
-        estado TEXT,  -- presente / falta / retardo
-        FOREIGN KEY(alumno_id) REFERENCES alumnos(id),
-        FOREIGN KEY(materia_id) REFERENCES materias(id)
+        estado TEXT
     )
     """)
 
-
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS alumno_materia(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    alumno_id INTEGER,
-    materia_id INTEGER,
-    UNIQUE(alumno_id, materia_id)
-    )
-    """)
     # =========================
     # USUARIO ADMIN POR DEFECTO
     # =========================
@@ -113,8 +102,6 @@ def crear_bd():
     VALUES
     (1,'admin','1234','Administrador')
     """)
-
-  
 
     conn.commit()
     conn.close()
