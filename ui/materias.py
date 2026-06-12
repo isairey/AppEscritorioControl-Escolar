@@ -179,21 +179,67 @@ class MateriasWidget(QWidget):
 
     # =========================
     # REGISTRO
-    # =========================
+       # =========================
     def ui_registro(self):
         layout = QVBoxLayout()
+        layout.setSpacing(15)
 
         self.nombre = QLineEdit()
         self.nombre.setPlaceholderText("Nombre de la materia")
+        self.nombre.setFixedHeight(45)
+        self.nombre.setStyleSheet("""
+            QLineEdit {
+                background-color: #1E293B;
+                border: 2px solid #334155;
+                border-radius: 10px;
+                padding: 12px;
+                color: white;
+                font-size: 14px;
+            }
+            QLineEdit:focus {
+                border-color: #3B82F6;
+            }
+            QLineEdit::placeholder {
+                color: #64748B;
+            }
+        """)
 
         self.btnGuardar = QPushButton(" Guardar Materia")
-        self.btnGuardar.clicked.connect(self.guardar)
+        self.btnGuardar.setFixedHeight(45)
+        self.btnGuardar.setCursor(Qt.PointingHandCursor)
+        self.btnGuardar.setStyleSheet("""
+            QPushButton {
+                background-color: #22C55E;
+                border: none;
+                border-radius: 10px;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #16A34A;
+            }
+            QPushButton:pressed {
+                background-color: #15803D;
+            }
+        """)
+
+        self.mensaje = QLabel("")
+        self.mensaje.setAlignment(Qt.AlignCenter)
+        self.mensaje.setStyleSheet("font-size: 12px;")
 
         layout.addWidget(self.nombre)
         layout.addWidget(self.btnGuardar)
+        layout.addWidget(self.mensaje)
         layout.addStretch()
 
         self.tabRegistro.setLayout(layout)
+
+        # =========================
+        # EVENTO
+        # =========================
+        self.btnGuardar.clicked.connect(self.guardar)
+        self.nombre.returnPressed.connect(self.guardar)
 
     # =========================
     # ASIGNAR
@@ -298,24 +344,44 @@ class MateriasWidget(QWidget):
 
     # =========================
     # GUARDAR
-    # =========================
     def guardar(self):
+        nombre = self.nombre.text().strip()
+
+        # VALIDACIÓN: Nombre vacío
+        if not nombre:
+            self.mensaje.setText("Ingresa el nombre de la materia")
+            self.mensaje.setStyleSheet("color: #EF4444; font-size: 12px;")
+            return
+
         conn = conectar()
         cursor = conn.cursor()
 
+        # VALIDACIÓN: Verificar duplicado
+        cursor.execute("SELECT id FROM materias WHERE nombre = ?", (nombre,))
+        existe = cursor.fetchone()
+
+        if existe and self.id_actual != existe[0]:
+            self.mensaje.setText("Esta materia ya existe")
+            self.mensaje.setStyleSheet("color: #EF4444; font-size: 12px;")
+            conn.close()
+            return
+
+        # INSERTAR O ACTUALIZAR
         if self.id_actual is None:
-            cursor.execute("INSERT INTO materias(nombre) VALUES(?)",
-                           (self.nombre.text(),))
+            cursor.execute("INSERT INTO materias(nombre) VALUES(?)", (nombre,))
         else:
-            cursor.execute("UPDATE materias SET nombre=? WHERE id=?",
-                           (self.nombre.text(), self.id_actual))
+            cursor.execute("UPDATE materias SET nombre=? WHERE id=?", 
+                           (nombre, self.id_actual))
 
         conn.commit()
         conn.close()
 
+        # LIMPIAR
         self.nombre.clear()
         self.id_actual = None
+        self.mensaje.clear()
 
+        # CARGAR
         self.cargar_materias()
         self.cargar_combos()
         self.tabs.setCurrentIndex(2)
@@ -480,15 +546,16 @@ class MateriasWidget(QWidget):
         self.comboMateria.setCurrentIndex(0)
     # =========================
     # COMBOS
-    # =========================
     def cargar_combos(self):
         conn = conectar()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, nombre FROM alumnos")
+        # ALUMNOS - mostrar nombre completo
+        cursor.execute("SELECT id, nombre, apellido FROM alumnos ORDER BY nombre")
         alumnos = cursor.fetchall()
 
-        cursor.execute("SELECT id, nombre FROM materias")
+        # MATERIAS
+        cursor.execute("SELECT id, nombre FROM materias ORDER BY nombre")
         materias = cursor.fetchall()
 
         conn.close()
@@ -496,8 +563,9 @@ class MateriasWidget(QWidget):
         self.comboAlumno.clear()
         self.comboMateria.clear()
 
+        # Nombre completo
         for a in alumnos:
-            self.comboAlumno.addItem(a[1], a[0])
+            self.comboAlumno.addItem(f"{a[1]} {a[2]}", a[0])
 
         for m in materias:
             self.comboMateria.addItem(m[1], m[0])
