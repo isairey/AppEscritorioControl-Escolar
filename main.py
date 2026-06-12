@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("🎓 TeacherDesk Pro")
+        self.setWindowTitle(" TeacherDesk Pro")
         self.resize(1400, 800)
 
         central = QWidget()
