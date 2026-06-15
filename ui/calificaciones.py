@@ -154,7 +154,7 @@ class CalificacionesWidget(QWidget):
         ])
 
         # FILAS MÁS ALTAS
-        self.tabla.verticalHeader().setDefaultSectionSize(50)  # <-- altO de fila
+        self.tabla.verticalHeader().setDefaultSectionSize(60)  # <-- altO de fila
 
         self.tabla.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla.verticalHeader().setVisible(False)
@@ -307,36 +307,113 @@ class CalificacionesWidget(QWidget):
 
             promedio = self.promedio_alumno(dato[4])
 
-            self.tabla.setItem(fila, 0, QTableWidgetItem(str(dato[0])))
-            self.tabla.setItem(fila, 1, QTableWidgetItem(dato[1]))
-            self.tabla.setItem(fila, 2, QTableWidgetItem(dato[2]))
-            self.tabla.setItem(fila, 3, QTableWidgetItem(str(dato[3])))
-            self.tabla.setItem(fila, 4, QTableWidgetItem(str(promedio)))
+            self.tabla.setItem(
+                fila, 0,
+                QTableWidgetItem(str(dato[0]))
+            )
 
-            btn_edit = QPushButton("✏️")
-            btn_del = QPushButton("🗑")
+            self.tabla.setItem(
+                fila, 1,
+                QTableWidgetItem(dato[1])
+            )
 
-            btn_edit.setStyleSheet("background:#3B82F6; padding:5px; border-radius:5px;")
-            btn_del.setStyleSheet("background:#EF4444; padding:5px; border-radius:5px;")
+            self.tabla.setItem(
+                fila, 2,
+                QTableWidgetItem(dato[2])
+            )
+
+            self.tabla.setItem(
+                fila, 3,
+                QTableWidgetItem(str(dato[3]))
+            )
+
+            self.tabla.setItem(
+                fila, 4,
+                QTableWidgetItem(str(promedio))
+            )
+
+            # =====================
+            # BOTON EDITAR
+            # =====================
+
+            btn_edit = QPushButton("Editar")
+            btn_edit.setFixedHeight(32)
+            btn_edit.setCursor(Qt.PointingHandCursor)
+
+            btn_edit.setStyleSheet("""
+                QPushButton{
+                    background: transparent;
+                    color: #0D6EFD;
+                    border: 2px solid #0D6EFD;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-weight: bold;
+                }
+
+                QPushButton:hover{
+                    background-color: #0D6EFD;
+                    color: white;
+                }
+
+                QPushButton:pressed{
+                    background-color: #0B5ED7;
+                    border: 2px solid #0B5ED7;
+                }
+            """)
+
+            # =====================
+            # BOTON ELIMINAR
+            # =====================
+
+            btn_del = QPushButton("Eliminar")
+            btn_del.setFixedHeight(32)
+            btn_del.setCursor(Qt.PointingHandCursor)
+
+            btn_del.setStyleSheet("""
+                QPushButton{
+                    background: transparent;
+                    color: #DC3545;
+                    border: 2px solid #DC3545;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-weight: bold;
+                }
+
+                QPushButton:hover{
+                    background-color: #DC3545;
+                    color: white;
+                }
+
+                QPushButton:pressed{
+                    background-color: #BB2D3B;
+                    border: 2px solid #BB2D3B;
+                }
+            """)
 
             btn_edit.clicked.connect(
-                lambda _, idc=dato[0]: self.cargar_para_editar(idc)
+                lambda _, idc=dato[0]:
+                self.cargar_para_editar(idc)
             )
 
             btn_del.clicked.connect(
-                lambda _, idc=dato[0]: self.eliminar(idc)
+                lambda _, idc=dato[0]:
+                self.eliminar(idc)
             )
 
             cont = QWidget()
+
             h = QHBoxLayout(cont)
-            h.setContentsMargins(0, 0, 0, 0)
-            h.setSpacing(5)
+            h.setContentsMargins(5, 2, 5, 2)
+            h.setSpacing(8)
 
             h.addWidget(btn_edit)
             h.addWidget(btn_del)
 
-            self.tabla.setCellWidget(fila, 5, cont)
-
+            self.tabla.setCellWidget(
+                fila,
+                5,
+                cont
+            )
     def cargar_para_editar(self, id_calificacion):
 
         conn = conectar()
