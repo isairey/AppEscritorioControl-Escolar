@@ -174,7 +174,7 @@ class MateriasWidget(QWidget):
         table.verticalHeader().setVisible(False)
         table.setSelectionBehavior(QTableWidget.SelectRows)
         table.setEditTriggers(QTableWidget.NoEditTriggers)
-        table.verticalHeader().setDefaultSectionSize(48)
+        table.verticalHeader().setDefaultSectionSize(60)
         table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     # =========================
@@ -319,6 +319,13 @@ class MateriasWidget(QWidget):
 
         self.estilo_tabla(self.tablaMaterias)
 
+        self.tablaMaterias.setAlternatingRowColors(True)
+        self.tablaMaterias.verticalHeader().setVisible(False)
+        self.tablaMaterias.setSelectionBehavior(QTableWidget.SelectRows)
+        self.tablaMaterias.setShowGrid(False)
+        self.tablaMaterias.horizontalHeader().setStretchLastSection(True)
+        self.tablaMaterias.setColumnWidth(2, 220)
+
         layout.addWidget(self.tablaMaterias)
         self.tabMaterias.setLayout(layout)
 
@@ -392,42 +399,118 @@ class MateriasWidget(QWidget):
     def cargar_materias(self):
         conn = conectar()
         cursor = conn.cursor()
+
         cursor.execute("SELECT * FROM materias")
         datos = cursor.fetchall()
+
         conn.close()
 
         self.tablaMaterias.setRowCount(len(datos))
 
         for i, m in enumerate(datos):
 
-            self.tablaMaterias.setItem(i, 0, QTableWidgetItem(str(m[0])))
-            self.tablaMaterias.setItem(i, 1, QTableWidgetItem(m[1]))
+            self.tablaMaterias.setItem(
+                i, 0,
+                QTableWidgetItem(str(m[0]))
+            )
+
+            self.tablaMaterias.setItem(
+                i, 1,
+                QTableWidgetItem(m[1])
+            )
 
             cont = QWidget()
-            h = QHBoxLayout()
-            h.setContentsMargins(0, 0, 0, 0)
 
-            btnE = QPushButton("✏️")
-            btnD = QPushButton("🗑")
+            h = QHBoxLayout(cont)
+            h.setContentsMargins(5, 2, 5, 2)
+            h.setSpacing(8)
 
-            btnE.clicked.connect(lambda _, x=m: self.editar(x))
-            btnD.clicked.connect(lambda _, id=m[0]: self.eliminar(id))
+            # =====================
+            # BOTON EDITAR
+            # =====================
+
+            btnE = QPushButton("Editar")
+            btnE.setFixedHeight(32)
+            btnE.setCursor(Qt.PointingHandCursor)
+
+            btnE.setStyleSheet("""
+                QPushButton{
+                    background: transparent;
+                    color: #0D6EFD;
+                    border: 2px solid #0D6EFD;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-weight: bold;
+                }
+
+                QPushButton:hover{
+                    background-color: #0D6EFD;
+                    color: white;
+                }
+
+                QPushButton:pressed{
+                    background-color: #0B5ED7;
+                    border: 2px solid #0B5ED7;
+                }
+            """)
+
+            # =====================
+            # BOTON ELIMINAR
+            # =====================
+
+            btnD = QPushButton("Eliminar")
+            btnD.setFixedHeight(32)
+            btnD.setCursor(Qt.PointingHandCursor)
+
+            btnD.setStyleSheet("""
+                QPushButton{
+                    background: transparent;
+                    color: #DC3545;
+                    border: 2px solid #DC3545;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-weight: bold;
+                }
+
+                QPushButton:hover{
+                    background-color: #DC3545;
+                    color: white;
+                }
+
+                QPushButton:pressed{
+                    background-color: #BB2D3B;
+                    border: 2px solid #BB2D3B;
+                }
+            """)
+
+            btnE.clicked.connect(
+                lambda _, x=m: self.editar(x)
+            )
+
+            btnD.clicked.connect(
+                lambda _, id=m[0]: self.eliminar(id)
+            )
 
             h.addWidget(btnE)
             h.addWidget(btnD)
 
-            cont.setLayout(h)
-            self.tablaMaterias.setCellWidget(i, 2, cont)
-
+            self.tablaMaterias.setCellWidget(
+                i,
+                2,
+                cont
+            )
     # =========================
     # CLICK MATERIA → ALUMNOS
     # =========================
     def ver_alumnos(self, row, col):
 
-        self.materia_seleccionada = int(self.tablaMaterias.item(row, 0).text())
+        self.materia_seleccionada = int(
+            self.tablaMaterias.item(row, 0).text()
+        )
+
         nombre = self.tablaMaterias.item(row, 1).text()
 
-        self.lblMateria.setText(f"📘 {nombre}")
+        self.lblMateria.setText(f"Materia: {nombre}")
 
         conn = conectar()
         cursor = conn.cursor()
@@ -440,17 +523,54 @@ class MateriasWidget(QWidget):
         """, (self.materia_seleccionada,))
 
         datos = cursor.fetchall()
+
         conn.close()
 
         self.tablaAlumnos.setRowCount(len(datos))
 
         for i, r in enumerate(datos):
-            self.tablaAlumnos.setItem(i, 0, QTableWidgetItem(r[0]))
 
-            btn = QPushButton("🗑")
-            btn.clicked.connect(lambda _, x=r[1]: self.eliminar_inscripcion(x))
+            self.tablaAlumnos.setItem(
+                i,
+                0,
+                QTableWidgetItem(r[0])
+            )
 
-            self.tablaAlumnos.setCellWidget(i, 1, btn)
+            btn = QPushButton("Eliminar")
+            btn.setFixedHeight(32)
+            btn.setCursor(Qt.PointingHandCursor)
+
+            btn.setStyleSheet("""
+                QPushButton{
+                    background: transparent;
+                    color: #DC3545;
+                    border: 2px solid #DC3545;
+                    border-radius: 8px;
+                    padding: 5px 12px;
+                    font-weight: bold;
+                }
+
+                QPushButton:hover{
+                    background-color: #DC3545;
+                    color: white;
+                }
+
+                QPushButton:pressed{
+                    background-color: #BB2D3B;
+                    border: 2px solid #BB2D3B;
+                }
+            """)
+
+            btn.clicked.connect(
+                lambda _, x=r[1]:
+                self.eliminar_inscripcion(x)
+            )
+
+            self.tablaAlumnos.setCellWidget(
+                i,
+                1,
+                btn
+            )
 
         self.tabs.setCurrentIndex(3)
 
