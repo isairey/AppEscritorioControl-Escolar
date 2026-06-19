@@ -1,7 +1,7 @@
 import requests
 
 usuario = "isairey"
-token = ""
+token = "" #//En esta parte va el Token de Github
 
 headers = {
     "Authorization": f"token {token}",
